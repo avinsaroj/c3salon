@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, m } from "framer-motion";
 import { Check, ChevronDown, MapPin, X } from "lucide-react";
 import { BRANCHES, BRANCH_COOKIE, DEFAULT_BRANCH, branchById, type Branch, type BranchId } from "@/lib/branches";
@@ -59,20 +59,25 @@ export function BranchSelect({ className = "" }: { className?: string }) {
   );
 }
 
-/** Delay after each page opens before visitors are asked to confirm their branch. */
+/** Delay after the first page opens before visitors are asked to pick their branch. */
 const PROMPT_DELAY_MS = 1000;
 
-/** Dialog asking which branch to show, opened on every page visit. */
+/**
+ * Dialog asking which branch to show, opened only until the visitor makes a
+ * choice. Any choice (including closing) writes the branch cookie, which is
+ * what stops it reappearing on later pages and visits.
+ */
 export function BranchPrompt() {
-  const pathname = usePathname();
   const { branch, select } = useBranch();
   const [open, setOpen] = useState(false);
   const firstButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    const chosen = document.cookie.split("; ").some((c) => c.startsWith(`${BRANCH_COOKIE}=`));
+    if (chosen) return;
     const t = window.setTimeout(() => setOpen(true), PROMPT_DELAY_MS);
     return () => window.clearTimeout(t);
-  }, [pathname]);
+  }, []);
 
   const choose = (id: BranchId) => {
     select(id);

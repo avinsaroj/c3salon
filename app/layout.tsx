@@ -5,6 +5,7 @@ import { SITE } from "@/lib/site";
 import { seo, businessSchema } from "@/lib/schema";
 import { getBranch } from "@/lib/branch-server";
 import { Providers } from "@/components/Providers";
+import { BranchPrompt } from "@/components/Branch";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
@@ -58,6 +59,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <main id="main">{children}</main>
           <Footer />
           <WhatsAppButton />
+          <BranchPrompt />
         </Providers>
         <JsonLd data={businessSchema} />
       </body>

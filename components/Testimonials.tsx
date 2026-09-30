@@ -1,5 +1,5 @@
 import { Quote, Star } from "lucide-react";
-import { SITE } from "@/lib/site";
+import { getBranch } from "@/lib/branch-server";
 import { Reveal } from "./motion";
 import { Button } from "./ui";
 import { SectionHeading } from "./SectionHeading";
@@ -22,7 +22,8 @@ function Stars({ filled = true }: { filled?: boolean }) {
   );
 }
 
-export function Testimonials() {
+export async function Testimonials() {
+  const branch = await getBranch();
   return (
     <section aria-labelledby="reviews-h" className="bg-sand/50 py-20 md:py-28">
       <div className="container-lux">
@@ -40,7 +41,7 @@ export function Testimonials() {
               ))}
             </ul>
             <div className="mt-10 text-center">
-              <Button href={SITE.reviewUrl} variant="outline">Review us</Button>
+              <Button href={branch.reviewUrl} variant="outline">Review us</Button>
             </div>
           </>
         ) : (
@@ -48,13 +49,13 @@ export function Testimonials() {
             <Quote className="mx-auto size-10 text-nude" aria-hidden />
             <p className="display mt-6 text-4xl md:text-5xl">Your experience matters to us.</p>
             <p className="mx-auto mt-4 max-w-md text-muted">
-              Visited C3? Share a few words on Google. It helps others in Belgaum find us.
+              Visited C3? Share a few words on Google. It helps others in {branch.name} find us.
             </p>
             <div className="mt-6 flex justify-center">
               <Stars filled={false} />
             </div>
             <div className="mt-8">
-              <Button href={SITE.reviewUrl}>Review us</Button>
+              <Button href={branch.reviewUrl}>Review us</Button>
             </div>
           </Reveal>
         )}

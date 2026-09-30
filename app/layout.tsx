@@ -3,6 +3,7 @@ import { Instrument_Serif, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { SITE } from "@/lib/site";
 import { seo, businessSchema } from "@/lib/schema";
+import { getBranch } from "@/lib/branch-server";
 import { Providers } from "@/components/Providers";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -24,7 +25,7 @@ const sans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: { default: seo.title, template: `%s · ${SITE.name} Belgaum` },
+  title: { default: seo.title, template: `%s · ${SITE.name}` },
   description: seo.description,
   keywords: seo.keywords,
   alternates: { canonical: "/" },
@@ -41,7 +42,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: "#fbf8f4" };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const branch = await getBranch();
   return (
     <html lang="en-IN" className={`${display.variable} ${sans.variable}`}>
       <body>
@@ -51,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        <Providers>
+        <Providers branch={branch.id}>
           <Navbar />
           <main id="main">{children}</main>
           <Footer />

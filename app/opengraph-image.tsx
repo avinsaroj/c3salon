@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "C3 Unisex Salon, Belgaum";
+export const alt = "C3 Unisex Salon, Belgaum & Kolhapur";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -19,7 +19,7 @@ export default function OG() {
           justifyContent: "center",
         }}
       >
-        <div style={{ fontSize: 30, letterSpacing: 10, color: "#8a6a3a" }}>C3 UNISEX SALON · BELGAUM</div>
+        <div style={{ fontSize: 30, letterSpacing: 10, color: "#8a6a3a" }}>C3 UNISEX SALON · BELGAUM · KOLHAPUR</div>
         <div style={{ fontSize: 110, marginTop: 30, fontFamily: "serif" }}>Look good.</div>
         <div style={{ fontSize: 110, fontStyle: "italic", color: "#8a6a3a", fontFamily: "serif" }}>
           Feel confident.

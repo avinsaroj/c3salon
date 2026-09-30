@@ -2,11 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { CATEGORIES } from "@/lib/services";
+import { getBranch } from "@/lib/branch-server";
 import { Reveal } from "../motion";
 import { ArrowLink } from "../ui";
 import { SectionHeading } from "../SectionHeading";
 
-export function CategoryCards() {
+export async function CategoryCards() {
+  const branch = await getBranch();
   return (
     <section id="services" aria-labelledby="services-h" className="container-lux py-20 md:py-28">
       <SectionHeading
@@ -34,7 +36,7 @@ export function CategoryCards() {
                 <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
               </div>
               <span className="absolute left-3 top-3 rounded-full bg-cream/90 px-2.5 py-1 text-[0.7rem] font-semibold backdrop-blur sm:left-4 sm:top-4 sm:px-3 sm:py-1.5 sm:text-xs">
-                From {c.from}
+                {c.from[branch.id] ? `From ${c.from[branch.id]}` : "Price on request"}
               </span>
               <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 text-cream sm:p-6">
                 <div>

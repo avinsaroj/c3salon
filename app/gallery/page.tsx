@@ -8,7 +8,7 @@ import { breadcrumbSchema, pageMeta } from "@/lib/schema";
 
 export const metadata = pageMeta(
   "Gallery",
-  "Hair, makeup, bridal, skin and salon inspiration from C3 Unisex Salon, Belgaum. Follow @c3_unisex_salon_belgaum for our latest work.",
+  "Hair, makeup, bridal, skin and salon inspiration from C3 Unisex Salon. Follow @c3_unisex_salon_belgaum for our latest work.",
   "/gallery",
 );
 

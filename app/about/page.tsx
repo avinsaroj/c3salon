@@ -9,7 +9,7 @@ import { breadcrumbSchema, pageMeta } from "@/lib/schema";
 
 export const metadata = pageMeta(
   "About Us",
-  "C3 Unisex Salon is a modern hair, beauty and grooming salon in Belgaum built around personal consultation, professional stylists and premium care.",
+  "C3 Unisex Salon is a modern hair, beauty and grooming salon in Belgaum and Kolhapur built around personal consultation, professional stylists and premium care.",
   "/about",
 );
 
@@ -39,7 +39,7 @@ export default function AboutPage() {
         eyebrow="Our story"
         lines={["More than", "a salon."]}
         accent={1}
-        intro="C3 Unisex Salon is a modern space in Belgaum for hair, beauty and grooming, where every visit begins with listening."
+        intro="C3 Unisex Salon is a modern space for hair, beauty and grooming in Belgaum and Kolhapur, where every visit begins with listening."
         image={IMG.salonInterior}
       />
 

@@ -5,19 +5,25 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { CATEGORIES, SERVICES, type CategoryId } from "@/lib/services";
+import { CATEGORIES, servicesFor, type CategoryId } from "@/lib/services";
 import { EASE, bookHref } from "@/lib/site";
 import { ArrowLink } from "./ui";
 import { TabBar } from "./TabBar";
+import { useBranch } from "./Branch";
 
 type Filter = "all" | CategoryId;
-const FILTERS: { id: Filter; label: string }[] = [
-  { id: "all", label: "All" },
-  ...CATEGORIES.map((c) => ({ id: c.id, label: c.title })),
-];
 
 export function ServicesCatalog() {
-  const [filter, setFilter] = useState<Filter>("all");
+  const { branch } = useBranch();
+  const services = servicesFor(branch.id);
+  // Categories with nothing on this branch's rate card are left out.
+  const categories = CATEGORIES.filter((c) => services.some((s) => s.category === c.id));
+  const filters: { id: Filter; label: string }[] = [
+    { id: "all", label: "All" },
+    ...categories.map((c) => ({ id: c.id, label: c.title })),
+  ];
+  const [picked, setFilter] = useState<Filter>("all");
+  const filter = filters.some((f) => f.id === picked) ? picked : "all";
 
   // /services#skin (from the home page) pre-selects that category.
   useEffect(() => {
@@ -25,15 +31,15 @@ export function ServicesCatalog() {
     if (CATEGORIES.some((c) => c.id === hash)) setFilter(hash);
   }, []);
 
-  const list = SERVICES.filter((s) => filter === "all" || s.category === filter);
-  const category = CATEGORIES.find((c) => c.id === filter);
+  const list = services.filter((s) => filter === "all" || s.category === filter);
+  const category = categories.find((c) => c.id === filter);
 
   return (
     <section aria-label="Service list" className="container-lux py-12 md:py-16">
       {/* Sticky on larger screens only; on phones the wrapped tab grid would cover too much. */}
       <div className="z-20 md:sticky md:top-[68px] md:-mx-5 md:bg-cream/90 md:px-5 md:py-3 md:backdrop-blur">
         <TabBar
-          tabs={FILTERS}
+          tabs={filters}
           active={filter}
           onChange={(id) => {
             setFilter(id);
@@ -63,7 +69,7 @@ export function ServicesCatalog() {
               <h2 className="display mt-1 text-5xl">{category.title}</h2>
               <p className="mt-3 max-w-xl leading-relaxed text-muted">{category.intro}</p>
               <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2">
-                <span className="rounded-full bg-cream px-4 py-2 text-sm font-bold">From {category.from}</span>
+                <span className="rounded-full bg-cream px-4 py-2 text-sm font-bold">From {category.from[branch.id]}</span>
                 <ArrowLink href={`/pricing#${category.pricingTab}`}>Full prices</ArrowLink>
               </div>
             </div>

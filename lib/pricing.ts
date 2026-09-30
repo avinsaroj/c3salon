@@ -1,8 +1,9 @@
 /**
- * Source of truth: "SAI PRICE LIST.pdf" (C3 Unisex Salon). Prices are in INR.
- * Where the printed list shows a range it is kept as a range.
- * Page 7 of the PDF holds two overlapping facial/protein price sets; this file
- * uses the set that is visible on the printed page.
+ * Source of truth: each branch's printed rate card. Prices are in INR.
+ * Where a printed list shows a range it is kept as a range.
+ * - Belgaum: "Belgaum rate card.pdf". Page 7 holds two overlapping
+ *   facial/protein price sets; the visible set is used (the hidden one is Kolhapur's).
+ * - Kolhapur: "Kolhapur rate card.pdf". The card has no makeup section.
  */
 export type Price = { min: number; max?: number };
 export type Row = { name: string; price: Price; note?: string };
@@ -29,7 +30,7 @@ const tiers = (prices: Price[], labels = LEN): Tier[] =>
 
 export const LENGTH_NOTE = "Price depends on hair length and density.";
 
-export const PRICING: PriceTab[] = [
+export const BELGAUM_PRICING: PriceTab[] = [
   {
     id: "hair",
     label: "Hair",
@@ -195,6 +196,180 @@ export const PRICING: PriceTab[] = [
           { name: "Beard Color", price: p(200) },
           { name: "Gents Head Massage", price: p(200) },
           { name: "Ladies Head Massage", price: p(400) },
+        ],
+      },
+      {
+        title: "Threading",
+        rows: [
+          { name: "Eyebrows", price: p(50) },
+          { name: "Forehead", price: p(30) },
+          { name: "Upperlips", price: p(30) },
+          { name: "Chin", price: p(30) },
+        ],
+      },
+    ],
+  },
+];
+
+export const KOLHAPUR_PRICING: PriceTab[] = [
+  {
+    id: "hair",
+    label: "Hair",
+    groups: [
+      {
+        title: "Hair Cut",
+        rows: [
+          { name: "Ladies Hair Cut", price: p(600) },
+          { name: "Shoulder to Long Girl", note: "Under 10 years", price: p(500) },
+          { name: "Adult Hair Cut", price: p(250) },
+          { name: "Child Hair Cut", price: p(200) },
+          { name: "Baby Hair Cut", price: p(150) },
+          { name: "Flix Cut", price: p(100) },
+        ],
+      },
+      {
+        title: "Hair Wash",
+        rows: [{ name: "Gents Hair Wash", price: p(100) }],
+        tiers: [
+          { label: "Shoulder to middle length", price: p(250) },
+          { label: "Up to waist", price: p(300) },
+          { label: "Below waist", price: p(350) },
+        ],
+      },
+      {
+        title: "Blow Dry",
+        tiers: [
+          { label: "Shoulder to middle length", price: p(200) },
+          { label: "Up to waist to below waist", price: p(300) },
+        ],
+      },
+      {
+        title: "Styling",
+        rows: [
+          { name: "Ironing", price: p(600, 900) },
+          { name: "Tong", price: p(600, 900) },
+        ],
+      },
+      {
+        title: "Hair Spa",
+        rows: [{ name: "Gents", price: p(800) }],
+        tiers: tiers([p(1000), p(1300), p(1600), p(1800)]),
+      },
+      {
+        title: "Deep Repairing Treatment",
+        tiers: tiers([p(1500), p(1800), p(2200), p(2500, 3000)]),
+      },
+      {
+        title: "Root Touchup",
+        tiers: [
+          { label: "Regular growth", price: p(1000) },
+          { label: "Medium growth", price: p(1200) },
+          { label: "Long growth", price: p(1500, 1800) },
+        ],
+      },
+      {
+        title: "Global Color · Virgin Hair",
+        rows: [{ name: "Gents Color", price: p(800) }],
+        tiers: tiers([p(3000), p(3500, 4000), p(4500, 5000), p(5000, 6000)]),
+        lengthNote: true,
+      },
+      {
+        title: "Global Color with Pre-lightning",
+        tiers: tiers([p(4000), p(4500, 5000), p(5500, 6000), p(6500, 8000)]),
+        lengthNote: true,
+      },
+      {
+        title: "Global Highlights · Virgin Hair",
+        tiers: tiers([p(3500), p(4000, 4500), p(5000, 5500), p(6000, 7000)]),
+        lengthNote: true,
+      },
+      {
+        title: "Global Highlights with Pre-lightning",
+        tiers: tiers([p(4500), p(5000, 5500), p(6000, 6500), p(7000, 8000)]),
+        lengthNote: true,
+      },
+      {
+        title: "Protein Treatment",
+        tiers: tiers([p(5000, 5500), p(6000, 6500), p(7000, 7500), p(8000, 10000)]),
+        lengthNote: true,
+      },
+      {
+        title: "Straightening Treatment",
+        tiers: tiers([p(4500, 5000), p(5500, 6500), p(6500, 7000), p(8000, 10000)]),
+        lengthNote: true,
+      },
+    ],
+  },
+  {
+    id: "skin",
+    label: "Skin",
+    groups: [
+      {
+        title: "Skin · Facials",
+        rows: [
+          { name: "Face D-Tan", price: p(400) },
+          { name: "Hand D-Tan", price: p(500) },
+          { name: "Clean Up", price: p(800) },
+          { name: "Advance Clean Up", price: p(1200) },
+          { name: "Mini Facial", price: p(1500) },
+          { name: "Advance Facial · Sensitive Skin", price: p(2000) },
+          { name: "Advance Facial · Brightening Skin", price: p(2000) },
+          { name: "Premium Facial", price: p(2200) },
+          { name: "Luxury Facial 24K Gold", price: p(3500) },
+        ],
+      },
+      {
+        title: "Skin Treatment · Peel",
+        rows: [
+          { name: "For Lightening", price: p(2500) },
+          { name: "For Oily to Acne Skin", price: p(2500) },
+          { name: "Dehydrated Skin", price: p(2500) },
+          { name: "Anti Ageing", price: p(2500) },
+        ],
+      },
+    ],
+  },
+  {
+    id: "waxing",
+    label: "Waxing",
+    groups: [
+      {
+        title: "Premium Waxing",
+        rows: [
+          { name: "Full Hand Waxing", price: p(550) },
+          { name: "Half Leg Wax", price: p(550) },
+          { name: "Full Leg Wax", price: p(750) },
+          { name: "Underarm", price: p(100) },
+          { name: "Upperlips & Chin", price: p(100) },
+        ],
+      },
+    ],
+  },
+  {
+    id: "nails",
+    label: "Nails",
+    groups: [
+      {
+        title: "Manicure & Pedicure",
+        rows: [
+          { name: "Premium Manicure", price: p(700) },
+          { name: "Premium Pedicure", price: p(1000) },
+          { name: "Luxury Manicure & Pedicure", price: p(2200) },
+        ],
+      },
+    ],
+  },
+  {
+    id: "grooming",
+    label: "Grooming",
+    groups: [
+      {
+        title: "Beard & Massage",
+        rows: [
+          { name: "Beard", price: p(150) },
+          { name: "Beard Color", price: p(400) },
+          { name: "Gents Head Massage", price: p(400) },
+          { name: "Ladies Head Massage", price: p(500) },
         ],
       },
       {

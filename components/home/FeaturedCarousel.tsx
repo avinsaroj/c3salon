@@ -6,15 +6,18 @@ import { useRef } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { IMG, type Photo } from "@/lib/images";
 import { bookHref } from "@/lib/site";
+import type { Prices } from "@/lib/branches";
+import { useBranch } from "../Branch";
 import { Reveal } from "../motion";
 import { SectionHeading } from "../SectionHeading";
 
-const FEATURED: { title: string; photo: Photo; desc: string; from: string; href: string; tag?: string }[] = [
+// "from" prices per branch, from lib/pricing.ts.
+const FEATURED: { title: string; photo: Photo; desc: string; from: Prices; href: string; tag?: string }[] = [
   {
     title: "Bridal Makeup",
     photo: IMG.bridalBraid,
     desc: "A flawless, photogenic look for your wedding day, designed around you.",
-    from: "₹8000",
+    from: { belgaum: "₹8000" },
     href: "/bridal",
     tag: "Signature",
   },
@@ -22,34 +25,35 @@ const FEATURED: { title: string; photo: Photo; desc: string; from: string; href:
     title: "Hair Color",
     photo: IMG.hairColor,
     desc: "Global colour and highlights blended for depth, dimension and shine.",
-    from: "₹2500",
+    from: { belgaum: "₹2500", kolhapur: "₹3000" },
     href: bookHref("Global Color"),
   },
   {
     title: "Hair Transformation",
     photo: IMG.hairWaves,
     desc: "Straightening and smoothing for sleek, manageable hair.",
-    from: "₹4500",
+    from: { belgaum: "₹4500", kolhapur: "₹4500" },
     href: bookHref("Straightening Treatment"),
   },
   {
     title: "Premium Facial",
     photo: IMG.skinGlow,
     desc: "Radiance-restoring skin care in a calm, unhurried setting.",
-    from: "₹2000",
+    from: { belgaum: "₹2000", kolhapur: "₹2200" },
     href: bookHref("Premium Facial"),
   },
   {
     title: "Protein Treatment",
     photo: IMG.hairWoman,
     desc: "Strength and smoothness for tired, over-processed hair.",
-    from: "₹4500",
+    from: { belgaum: "₹4500", kolhapur: "₹5000" },
     href: bookHref("Protein Treatment"),
   },
 ];
 
 export function FeaturedCarousel() {
   const track = useRef<HTMLUListElement>(null);
+  const { branch } = useBranch();
   const scroll = (dir: 1 | -1) => {
     const el = track.current;
     if (!el) return;
@@ -100,9 +104,11 @@ export function FeaturedCarousel() {
                 {f.tag && (
                   <span className="absolute left-4 top-4 rounded-full bg-ink px-3 py-1.5 text-xs font-semibold text-cream">{f.tag}</span>
                 )}
-                <span className="absolute bottom-4 right-4 rounded-full bg-cream/90 px-3.5 py-1.5 text-sm font-bold backdrop-blur">
-                  From {f.from}
-                </span>
+                {f.from[branch.id] && (
+                  <span className="absolute bottom-4 right-4 rounded-full bg-cream/90 px-3.5 py-1.5 text-sm font-bold backdrop-blur">
+                    From {f.from[branch.id]}
+                  </span>
+                )}
               </div>
               <h3 className="display mt-5 text-3xl">{f.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">{f.desc}</p>

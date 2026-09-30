@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import { ChevronDown, Info } from "lucide-react";
-import { PRICING, LENGTH_NOTE, formatPrice, type Group } from "@/lib/pricing";
+import { LENGTH_NOTE, formatPrice, type Group } from "@/lib/pricing";
 import { EASE } from "@/lib/site";
+import { BranchSelect, useBranch } from "./Branch";
 import { TabBar } from "./TabBar";
 
 function PriceLine({ label, price, note }: { label: string; price: string; note?: string }) {
@@ -73,15 +74,18 @@ function PricingCategory({ group, initialOpen, expandAll }: { group: Group; init
 }
 
 export function Pricing() {
-  const [tab, setTab] = useState(PRICING[0].id);
+  const { branch } = useBranch();
+  const tabs = branch.pricing;
+  const [tab, setTab] = useState(tabs[0].id);
   const [desktop, setDesktop] = useState(false);
-  const current = PRICING.find((t) => t.id === tab)!;
+  // A tab can be missing at the other branch (Kolhapur has no makeup list).
+  const current = tabs.find((t) => t.id === tab) ?? tabs[0];
 
   useEffect(() => {
     // Deep links such as /pricing#makeup open the matching tab.
     const sync = () => {
       const hash = window.location.hash.slice(1);
-      if (PRICING.some((t) => t.id === hash)) setTab(hash);
+      if (tabs.some((t) => t.id === hash)) setTab(hash);
     };
     sync();
     window.addEventListener("hashchange", sync);
@@ -89,13 +93,17 @@ export function Pricing() {
     const mq = window.matchMedia("(min-width: 768px)");
     setDesktop(mq.matches);
     return () => window.removeEventListener("hashchange", sync);
-  }, []);
+  }, [tabs]);
 
   return (
     <section id="prices" aria-label="Price list" className="container-lux py-16 md:py-24">
+      <div className="mb-8 flex flex-col items-center gap-3 text-center">
+        <p className="text-sm text-muted">Showing prices for our {branch.name} branch</p>
+        <BranchSelect />
+      </div>
       <TabBar
-        tabs={PRICING.map((t) => ({ id: t.id, label: t.label }))}
-        active={tab}
+        tabs={tabs.map((t) => ({ id: t.id, label: t.label }))}
+        active={current.id}
         onChange={(id) => {
           setTab(id);
           history.replaceState(null, "", `#${id}`);
@@ -107,10 +115,10 @@ export function Pricing() {
 
       <AnimatePresence mode="wait">
         <m.div
-          key={tab}
+          key={`${branch.id}-${current.id}`}
           id="price-panel"
           role="tabpanel"
-          aria-labelledby={`price-tab-${tab}`}
+          aria-labelledby={`price-tab-${current.id}`}
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8, transition: { duration: 0.2 } }}

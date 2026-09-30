@@ -35,5 +35,6 @@ Light, warm, editorial. Clean layouts, rounded photography, pill controls, gener
 One easing (`cubic-bezier(.22,1,.36,1)`), 0.4–1.1s. Masked line reveals for headings, fade-up for content, soft scale-in for images, subtle hover lifts, magnetic primary CTA, page-transition curtain on client navigation only. `prefers-reduced-motion` removes movement.
 
 ## Content rules
-- Prices come only from `lib/pricing.ts` (transcribed from `SAI PRICE LIST.pdf`). Ranges shown verbatim; length-based services carry "Price depends on hair length and density."
+- Two branches (Belgaum, Kolhapur) in `lib/branches.ts`; the visitor picks one (cookie `branch`, default Belgaum) and phone, WhatsApp, address, map and prices follow it. The header shows only "UNISEX SALON".
+- Prices come only from `lib/pricing.ts` (one list per branch, transcribed from each branch's rate card). Ranges shown verbatim; length-based services carry "Price depends on hair length and density."
 - Photos are CC0 mood images (`assets/CREDITS.md`), not client results. No fabricated reviews or before/after results.

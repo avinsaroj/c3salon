@@ -7,20 +7,22 @@ import { Faq } from "@/components/Faq";
 import { SectionHeading } from "@/components/SectionHeading";
 import { ImageReveal, Reveal, SplitReveal } from "@/components/motion";
 import { Button, Eyebrow, JsonLd, WhatsAppIcon } from "@/components/ui";
-import { IMG } from "@/lib/images";
-import { BRIDAL_FAQS, SERVICES } from "@/lib/services";
+import { IMG, type Photo } from "@/lib/images";
+import { bridalFaqsFor, servicesFor } from "@/lib/services";
 import { bookHref, waLink } from "@/lib/site";
+import { hasMakeup, type Prices } from "@/lib/branches";
+import { getBranch } from "@/lib/branch-server";
 import { breadcrumbSchema, faqSchema, pageMeta, servicesSchema } from "@/lib/schema";
 
 export const metadata = pageMeta(
-  "Bridal Makeup in Belgaum",
-  "Bridal, engagement, haldi and pre-wedding makeup at C3 Unisex Salon, Belgaum. Bridal makeup ₹8000 for a single look. Enquire on WhatsApp.",
+  "Bridal Makeup",
+  "Bridal, engagement, haldi and pre-wedding makeup at C3 Unisex Salon. Bridal makeup from ₹8000 for a single look in Belgaum. Enquire on WhatsApp.",
   "/bridal",
 );
 
 const BRIDAL_MSG = "Hi C3 Unisex Salon, I would like to enquire about bridal makeup.";
 
-// Prices from lib/pricing.ts (Makeup). Each applies to a single look.
+// Prices from lib/pricing.ts (Belgaum makeup; the Kolhapur card has none). Each applies to a single look.
 const PACKAGES = [
   { name: "Basic Makeup", service: "Makeup", price: "₹2000", desc: "Polished and fresh for parties, functions and family occasions." },
   { name: "Pre-Wedding Makeup", service: "Pre-Wedding Makeup", price: "₹3000", desc: "Camera-friendly looks for shoots and pre-wedding events." },
@@ -34,13 +36,17 @@ const STEPS = [
   { icon: Sparkles, t: "Celebrate", d: "Relax on the day while our team creates your look." },
 ];
 
-const EXTRAS = [
-  { name: "Ironing / Tong Styling", price: "from ₹300", image: IMG.hairStyling, service: "Styling" },
-  { name: "Luxury Facial 24K Gold", price: "₹3000", image: IMG.skinGlow, service: "Luxury Facial 24K Gold" },
-  { name: "Luxury Manicure & Pedicure", price: "₹1800", image: IMG.nails, service: "Manicure" },
+const EXTRAS: { name: string; price: Prices; image: Photo; service: string }[] = [
+  { name: "Ironing / Tong Styling", price: { belgaum: "from ₹300", kolhapur: "from ₹600" }, image: IMG.hairStyling, service: "Styling" },
+  { name: "Luxury Facial 24K Gold", price: { belgaum: "₹3000", kolhapur: "₹3500" }, image: IMG.skinGlow, service: "Luxury Facial 24K Gold" },
+  { name: "Luxury Manicure & Pedicure", price: { belgaum: "₹1800", kolhapur: "₹2200" }, image: IMG.nails, service: "Manicure" },
 ];
 
-export default function BridalPage() {
+export default async function BridalPage() {
+  const branch = await getBranch();
+  const makeup = hasMakeup(branch);
+  const faqs = bridalFaqsFor(branch);
+  const beauty = servicesFor(branch.id).filter((s) => s.category === "beauty");
   return (
     <>
       <PageHero
@@ -53,7 +59,7 @@ export default function BridalPage() {
         shape="portrait"
       >
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button href={waLink(BRIDAL_MSG)}>
+          <Button href={waLink(branch, BRIDAL_MSG)}>
             <WhatsAppIcon className="size-4" /> Enquire on WhatsApp
           </Button>
           <Button href="#packages" variant="outline">View packages</Button>
@@ -72,17 +78,26 @@ export default function BridalPage() {
             Your wedding look, created with care: skin that glows, eyes that hold up to every photograph, and a finish that feels like you.
           </Reveal>
           <Reveal delay={0.1} className="mt-8 inline-flex items-end gap-4 rounded-3xl bg-sand/70 px-6 py-5">
-            <div>
-              <p className="text-sm text-muted">Single look</p>
-              <p className="display text-6xl">₹8000</p>
-            </div>
+            {makeup ? (
+              <div>
+                <p className="text-sm text-muted">Single look</p>
+                <p className="display text-6xl">₹8000</p>
+              </div>
+            ) : (
+              <div>
+                <p className="text-sm text-muted">{branch.name}</p>
+                <p className="display text-4xl">Price on request</p>
+              </div>
+            )}
           </Reveal>
           <Reveal delay={0.15} className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button href={waLink(BRIDAL_MSG)}>Book bridal makeup</Button>
+            <Button href={waLink(branch, BRIDAL_MSG)}>Book bridal makeup</Button>
             <Button href={bookHref("Bridal Makeup")} variant="outline">Request a date</Button>
           </Reveal>
           <p className="mt-6 text-sm text-muted">
-            All makeup services are applicable for a single look only. Additional looks are charged separately.
+            {makeup
+              ? "All makeup services are applicable for a single look only. Additional looks are charged separately."
+              : `Makeup isn’t on the ${branch.name} rate card yet. Message us to check availability and prices.`}
           </p>
         </div>
       </section>
@@ -99,7 +114,7 @@ export default function BridalPage() {
                   className="group flex h-full min-h-72 flex-col justify-between rounded-[1.75rem] border border-line bg-cream p-7 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[var(--shadow-soft)]"
                 >
                   <div className="flex items-start justify-between">
-                    <span className="display text-5xl text-bronze">{p.price}</span>
+                    <span className={`display text-bronze ${makeup ? "text-5xl" : "text-3xl"}`}>{makeup ? p.price : "On request"}</span>
                     <span className="grid size-9 place-items-center rounded-full border border-line transition-all duration-300 group-hover:rotate-45 group-hover:bg-ink group-hover:text-cream">
                       <ArrowUpRight className="size-4" aria-hidden />
                     </span>
@@ -141,7 +156,7 @@ export default function BridalPage() {
               <Link href={bookHref(e.service)} className="group block">
                 <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] bg-sand">
                   <Image src={e.image.src} alt={e.image.alt} fill placeholder="blur" sizes="(min-width:768px) 30vw, 90vw" className="object-cover transition-transform duration-700 ease-[var(--ease-lux)] group-hover:scale-105" />
-                  <span className="absolute bottom-4 right-4 rounded-full bg-cream/90 px-3.5 py-1.5 text-sm font-bold backdrop-blur">{e.price}</span>
+                  <span className="absolute bottom-4 right-4 rounded-full bg-cream/90 px-3.5 py-1.5 text-sm font-bold backdrop-blur">{e.price[branch.id]}</span>
                 </div>
                 <h3 className="display mt-4 text-2xl">{e.name}</h3>
               </Link>
@@ -150,11 +165,11 @@ export default function BridalPage() {
         </ul>
       </section>
 
-      <Faq items={BRIDAL_FAQS} lines={["Bridal", "questions"]} />
+      <Faq items={faqs} lines={["Bridal", "questions"]} />
       <CtaBand lines={["Say yes to", "your look."]} message={BRIDAL_MSG} />
 
-      <JsonLd data={servicesSchema(SERVICES.filter((s) => s.category === "beauty"))} />
-      <JsonLd data={faqSchema(BRIDAL_FAQS)} />
+      {beauty.length > 0 && <JsonLd data={servicesSchema(beauty, branch)} />}
+      <JsonLd data={faqSchema(faqs)} />
       <JsonLd data={breadcrumbSchema("Bridal", "/bridal")} />
     </>
   );

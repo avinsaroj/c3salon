@@ -1,15 +1,17 @@
 import { Phone } from "lucide-react";
-import { DEFAULT_WA_MESSAGE, SITE, bookHref, waLink } from "@/lib/site";
+import { DEFAULT_WA_MESSAGE, bookHref, waLink } from "@/lib/site";
+import { getBranch } from "@/lib/branch-server";
 import { Magnetic, Reveal, SplitReveal } from "./motion";
 import { Button, WhatsAppIcon } from "./ui";
 
-export function CtaBand({
+export async function CtaBand({
   lines = ["Ready for your", "next look?"],
   message = DEFAULT_WA_MESSAGE,
 }: {
   lines?: string[];
   message?: string;
 }) {
+  const branch = await getBranch();
   return (
     <section aria-label="Book an appointment" className="container-lux py-16 md:py-24">
       <div className="relative overflow-hidden rounded-[2.5rem] bg-ink px-6 py-16 text-center text-cream sm:px-12 md:py-24">
@@ -22,10 +24,10 @@ export function CtaBand({
           <Magnetic>
             <Button href={bookHref()} variant="light" className="w-full sm:w-auto">Book Appointment</Button>
           </Magnetic>
-          <Button href={waLink(message)} variant="outline-light">
+          <Button href={waLink(branch, message)} variant="outline-light">
             <WhatsAppIcon className="size-4" /> WhatsApp Us
           </Button>
-          <Button href={`tel:${SITE.phone}`} variant="outline-light">
+          <Button href={`tel:${branch.phone}`} variant="outline-light">
             <Phone className="size-4" aria-hidden /> Call Now
           </Button>
         </Reveal>

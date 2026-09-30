@@ -4,12 +4,21 @@ import Image from "next/image";
 import { m, useReducedMotion } from "framer-motion";
 import { Phone, Sparkles } from "lucide-react";
 import { IMG } from "@/lib/images";
-import { EASE, SITE, bookHref, waLink } from "@/lib/site";
+import { EASE, bookHref, waLink } from "@/lib/site";
+import type { BranchId } from "@/lib/branches";
 import { Magnetic, Marquee, RotatingBadge, SplitReveal } from "../motion";
 import { Button, WhatsAppIcon } from "../ui";
+import { useBranch } from "../Branch";
+
+// Floating price badge, from each branch's price list in lib/pricing.ts.
+const BADGE: Record<BranchId, { label: string; price: string }> = {
+  belgaum: { label: "Bridal Makeup", price: "from ₹8000" },
+  kolhapur: { label: "Luxury Facial 24K Gold", price: "₹3500" },
+};
 
 export function Hero() {
   const reduce = useReducedMotion();
+  const { branch } = useBranch();
   const fade = (delay: number, y = 18) => ({
     initial: reduce ? false : { opacity: 0, y },
     animate: { opacity: 1, y: 0 },
@@ -33,7 +42,7 @@ export function Hero() {
                 <span className="absolute inset-0 rounded-full bg-bronze [animation:ping-soft_2.4s_ease-out_infinite]" />
                 <span className="relative size-2 rounded-full bg-bronze" />
               </span>
-              Unisex Salon · Belgaum
+              Unisex Salon · {branch.name}
             </m.p>
 
             <h1 className="display mt-7 text-[clamp(3.4rem,9vw,7.5rem)]">
@@ -52,11 +61,11 @@ export function Hero() {
             </m.div>
 
             <m.div {...fade(0.85)} className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted">
-              <a href={`tel:${SITE.phone}`} className="inline-flex items-center gap-2 transition-colors hover:text-ink">
-                <Phone className="size-4" aria-hidden /> {SITE.phoneDisplay}
+              <a href={`tel:${branch.phone}`} className="inline-flex items-center gap-2 transition-colors hover:text-ink">
+                <Phone className="size-4" aria-hidden /> {branch.phoneDisplay}
               </a>
               <span className="hidden h-4 w-px bg-line sm:block" aria-hidden />
-              <a href={waLink()} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 transition-colors hover:text-ink">
+              <a href={waLink(branch)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 transition-colors hover:text-ink">
                 <WhatsAppIcon className="size-4 text-[#1DA851]" /> WhatsApp us
               </a>
             </m.div>
@@ -110,8 +119,8 @@ export function Hero() {
                   <Sparkles className="size-5" aria-hidden />
                 </span>
                 <div>
-                  <p className="text-xs text-muted">Bridal Makeup</p>
-                  <p className="text-sm font-bold">from ₹8000</p>
+                  <p className="text-xs text-muted">{BADGE[branch.id].label}</p>
+                  <p className="text-sm font-bold">{BADGE[branch.id].price}</p>
                 </div>
               </div>
             </m.div>

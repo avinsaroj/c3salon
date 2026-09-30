@@ -6,7 +6,7 @@ import { breadcrumbSchema, pageMeta } from "@/lib/schema";
 
 export const metadata = pageMeta(
   "Price List",
-  "C3 Unisex Salon Belgaum price list: haircuts, hair spa, global colour, highlights, protein and straightening, makeup, facials, waxing, nails and grooming.",
+  "C3 Unisex Salon price lists for Belgaum and Kolhapur: haircuts, hair spa, global colour, highlights, protein and straightening, makeup, facials, waxing, nails and grooming.",
   "/pricing",
 );
 
@@ -18,7 +18,7 @@ export default function PricingPage() {
         eyebrow="Transparent pricing. Premium experience."
         lines={["Our price", "list"]}
         accent={1}
-        intro="Clear prices for every service. For colour, highlights and treatments, the rate depends on your hair's length and density."
+        intro="Clear prices for every service at each branch. For colour, highlights and treatments, the rate depends on your hair's length and density."
       />
       <Pricing />
       <CtaBand />

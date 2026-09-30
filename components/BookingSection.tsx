@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import { Clock, MapPin, Phone } from "lucide-react";
 import { SITE, waLink } from "@/lib/site";
+import { getBranch } from "@/lib/branch-server";
 import { BookingForm } from "./BookingForm";
 import { Reveal, SplitReveal } from "./motion";
 import { Button, Eyebrow, Instagram, WhatsAppIcon } from "./ui";
 
-export function BookingSection() {
+export async function BookingSection() {
+  const branch = await getBranch();
   return (
     <section id="book" aria-labelledby="book-h" className="bg-ink py-24 text-cream md:py-32">
       <div className="container-lux grid gap-14 lg:grid-cols-12 lg:gap-16">
@@ -18,17 +20,17 @@ export function BookingSection() {
             Send a request and we’ll confirm your appointment, or reach us directly.
           </Reveal>
           <Reveal delay={0.1} className="mt-8 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
-            <Button href={waLink()} variant="light">
+            <Button href={waLink(branch)} variant="light">
               <WhatsAppIcon className="size-4 text-[#1DA851]" /> WhatsApp Us
             </Button>
-            <Button href={`tel:${SITE.phone}`} variant="outline-light">
+            <Button href={`tel:${branch.phone}`} variant="outline-light">
               <Phone className="size-4" aria-hidden /> Call Now
             </Button>
           </Reveal>
           <Reveal delay={0.15}>
             <ul className="mt-12 space-y-4 text-sm text-cream/70">
-              <li className="flex items-center gap-3"><MapPin className="size-4 text-gold" aria-hidden /> C3 Unisex Salon, Belgaum</li>
-              <li className="flex items-center gap-3"><Phone className="size-4 text-gold" aria-hidden /> {SITE.phoneDisplay}</li>
+              <li className="flex items-center gap-3"><MapPin className="size-4 shrink-0 text-gold" aria-hidden /> {branch.street}, {branch.city} {branch.postalCode}</li>
+              <li className="flex items-center gap-3"><Phone className="size-4 text-gold" aria-hidden /> {branch.phoneDisplay}</li>
               <li className="flex items-center gap-3"><Instagram className="size-4 text-gold" /> @{SITE.instagram}</li>
               <li className="flex items-center gap-3"><Clock className="size-4 text-gold" aria-hidden /> Call or WhatsApp to check today’s availability</li>
             </ul>

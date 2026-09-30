@@ -6,11 +6,13 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, m, useMotionValueEvent, useScroll } from "framer-motion";
 import { Menu, Phone, X } from "lucide-react";
 import { EASE, NAV, SITE, bookHref, waLink } from "@/lib/site";
+import { BranchSelect, useBranch } from "./Branch";
 import { LogoMark } from "./Logo";
 import { Instagram, WhatsAppIcon } from "./ui";
 
 export function Navbar() {
   const pathname = usePathname();
+  const { branch } = useBranch();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
@@ -35,13 +37,10 @@ export function Navbar() {
           scrolled || open ? "border-b border-line bg-cream/85 py-3 backdrop-blur-xl" : "border-b border-transparent py-5"
         }`}
       >
-        <div className="container-lux flex items-center justify-between gap-6">
+        <div className="container-lux flex items-center justify-between gap-3 sm:gap-6">
           <Link href="/" className="flex items-center gap-3" aria-label="C3 Unisex Salon, home">
             <LogoMark className="w-10 text-ink" />
-            <span className="leading-tight">
-              <span className="block text-sm font-bold tracking-[0.14em]">UNISEX SALON</span>
-              <span className="block text-[0.68rem] tracking-[0.2em] text-muted">BELGAUM</span>
-            </span>
+            <span className="hidden text-sm font-bold leading-tight tracking-[0.14em] min-[400px]:block">UNISEX SALON</span>
           </Link>
 
           <nav aria-label="Primary" className="hidden lg:block">
@@ -66,9 +65,11 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <BranchSelect />
+            {/* Between lg and xl the desktop nav leaves no room for this button. */}
             <Link
               href={bookHref()}
-              className="hidden min-h-11 items-center rounded-full bg-ink px-6 text-sm font-semibold text-cream transition-colors hover:bg-bronze sm:inline-flex"
+              className="hidden min-h-11 items-center rounded-full bg-ink px-6 text-sm font-semibold text-cream transition-colors hover:bg-bronze sm:inline-flex lg:hidden xl:inline-flex"
             >
               Book Appointment
             </Link>
@@ -128,10 +129,10 @@ export function Navbar() {
                 Book Appointment
               </Link>
               <div className="flex justify-center gap-3">
-                <a href={`tel:${SITE.phone}`} aria-label="Call C3 Unisex Salon" className="grid size-12 place-items-center rounded-full border border-line">
+                <a href={`tel:${branch.phone}`} aria-label={`Call C3 Unisex Salon ${branch.name}`} className="grid size-12 place-items-center rounded-full border border-line">
                   <Phone className="size-5" aria-hidden />
                 </a>
-                <a href={waLink()} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp C3 Unisex Salon" className="grid size-12 place-items-center rounded-full border border-line">
+                <a href={waLink(branch)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp C3 Unisex Salon ${branch.name}`} className="grid size-12 place-items-center rounded-full border border-line">
                   <WhatsAppIcon className="size-5" />
                 </a>
                 <a href={SITE.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="C3 Unisex Salon on Instagram" className="grid size-12 place-items-center rounded-full border border-line">

@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Phone } from "lucide-react";
 import { NAV, SITE, bookHref, waLink } from "@/lib/site";
+import { getBranch } from "@/lib/branch-server";
 import { LogoMark } from "./Logo";
 import { Button, Instagram, WhatsAppIcon } from "./ui";
 
-export function Footer() {
+export async function Footer() {
+  const branch = await getBranch();
   return (
     <footer className="border-t border-cream/10 bg-ink pb-28 pt-16 text-cream md:pb-10 md:pt-20">
       <div className="container-lux">
@@ -18,7 +20,7 @@ export function Footer() {
               </div>
             </div>
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-cream/60">
-              Premium hair, beauty, makeup and grooming for women, men and families in Belgaum.
+              Premium hair, beauty and grooming for women, men and families in Belgaum and Kolhapur.
             </p>
             <Button href={bookHref()} variant="light" className="mt-6">Book Appointment</Button>
           </div>
@@ -35,16 +37,20 @@ export function Footer() {
           </nav>
 
           <div>
-            <h2 className="eyebrow mb-5 text-cream/45">Visit</h2>
+            <h2 className="eyebrow mb-5 text-cream/45">Visit · {branch.name}</h2>
             <address className="space-y-3 text-sm not-italic text-cream/75">
-              <p>C3 Unisex Salon<br />Belgaum, Karnataka</p>
               <p>
-                <a href={`tel:${SITE.phone}`} className="inline-flex items-center gap-2 transition-colors hover:text-gold">
-                  <Phone className="size-4" aria-hidden /> {SITE.phoneDisplay}
+                C3 Unisex Salon<br />
+                {branch.street}<br />
+                {branch.city} {branch.postalCode}, {branch.region}
+              </p>
+              <p>
+                <a href={`tel:${branch.phone}`} className="inline-flex items-center gap-2 transition-colors hover:text-gold">
+                  <Phone className="size-4" aria-hidden /> {branch.phoneDisplay}
                 </a>
               </p>
               <p>
-                <a href={SITE.directionsUrl} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-gold">
+                <a href={branch.directionsUrl} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-gold">
                   Get directions ↗
                 </a>
               </p>
@@ -57,7 +63,7 @@ export function Footer() {
               <a href={SITE.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="C3 Unisex Salon on Instagram" className="grid size-11 place-items-center rounded-full border border-cream/20 transition-colors hover:border-gold hover:text-gold">
                 <Instagram className="size-5" />
               </a>
-              <a href={waLink()} target="_blank" rel="noopener noreferrer" aria-label="Chat with C3 Unisex Salon on WhatsApp" className="grid size-11 place-items-center rounded-full border border-cream/20 transition-colors hover:border-gold hover:text-gold">
+              <a href={waLink(branch)} target="_blank" rel="noopener noreferrer" aria-label="Chat with C3 Unisex Salon on WhatsApp" className="grid size-11 place-items-center rounded-full border border-cream/20 transition-colors hover:border-gold hover:text-gold">
                 <WhatsAppIcon className="size-5" />
               </a>
             </div>

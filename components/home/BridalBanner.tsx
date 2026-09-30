@@ -1,9 +1,11 @@
 import { IMG } from "@/lib/images";
 import { waLink } from "@/lib/site";
+import { hasMakeup } from "@/lib/branches";
+import { getBranch } from "@/lib/branch-server";
 import { ImageReveal, Reveal, SplitReveal } from "../motion";
 import { Button, Eyebrow, WhatsAppIcon } from "../ui";
 
-// Prices from lib/pricing.ts (Makeup). Each applies to a single look.
+// Prices from lib/pricing.ts (Belgaum makeup; the Kolhapur card has none). Each applies to a single look.
 const LOOKS = [
   { name: "Pre-Wedding", price: "₹3000" },
   { name: "Haldi", price: "₹4000" },
@@ -11,7 +13,8 @@ const LOOKS = [
   { name: "Bridal", price: "₹8000" },
 ];
 
-export function BridalBanner() {
+export async function BridalBanner() {
+  const branch = await getBranch();
   return (
     <section aria-labelledby="bridal-h" className="container-lux py-12 md:py-16">
       <div className="grid overflow-hidden rounded-[2.5rem] bg-ink text-cream lg:grid-cols-2">
@@ -25,19 +28,27 @@ export function BridalBanner() {
             From haldi to the wedding day, makeup designed around you and made to last through every photograph.
           </Reveal>
           <Reveal delay={0.1}>
-            <ul className="mt-8 grid grid-cols-2 gap-3">
-              {LOOKS.map((l) => (
-                <li key={l.name} className={`rounded-2xl border p-4 ${l.name === "Bridal" ? "border-gold/50 bg-gold/10" : "border-cream/10"}`}>
-                  <p className="text-sm text-cream/60">{l.name}</p>
-                  <p className="mt-1 text-xl font-bold">{l.price}</p>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 text-xs text-cream/50">Prices apply to a single look. Additional looks are charged separately.</p>
+            {hasMakeup(branch) ? (
+              <>
+                <ul className="mt-8 grid grid-cols-2 gap-3">
+                  {LOOKS.map((l) => (
+                    <li key={l.name} className={`rounded-2xl border p-4 ${l.name === "Bridal" ? "border-gold/50 bg-gold/10" : "border-cream/10"}`}>
+                      <p className="text-sm text-cream/60">{l.name}</p>
+                      <p className="mt-1 text-xl font-bold">{l.price}</p>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-3 text-xs text-cream/50">Prices apply to a single look. Additional looks are charged separately.</p>
+              </>
+            ) : (
+              <p className="mt-8 max-w-md rounded-2xl border border-cream/10 p-4 text-sm text-cream/70">
+                Makeup isn’t on the {branch.name} rate card yet. Message us to check availability and prices.
+              </p>
+            )}
           </Reveal>
           <Reveal delay={0.15} className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button href="/bridal" variant="light">Explore Bridal</Button>
-            <Button href={waLink("Hi C3 Unisex Salon, I would like to enquire about bridal makeup.")} variant="outline-light">
+            <Button href={waLink(branch, "Hi C3 Unisex Salon, I would like to enquire about bridal makeup.")} variant="outline-light">
               <WhatsAppIcon className="size-4" /> Enquire
             </Button>
           </Reveal>

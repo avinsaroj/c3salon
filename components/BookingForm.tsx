@@ -4,8 +4,9 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
-import { CATEGORIES, SERVICES } from "@/lib/services";
+import { CATEGORIES, servicesFor } from "@/lib/services";
 import { EASE, waLink } from "@/lib/site";
+import { useBranch } from "./Branch";
 
 const field =
   "w-full rounded-2xl border border-line bg-sand/60 px-4 py-3.5 text-[0.95rem] text-ink placeholder:text-muted/70 transition-colors focus:border-ink focus:bg-white focus:outline-none";
@@ -18,8 +19,10 @@ function today() {
 
 export function BookingForm() {
   const params = useSearchParams();
+  const { branch } = useBranch();
+  const services = servicesFor(branch.id);
   const preset = params.get("service") ?? "";
-  const known = SERVICES.some((s) => s.name === preset);
+  const known = services.some((s) => s.name === preset);
   const [done, setDone] = useState(false);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -27,6 +30,7 @@ export function BookingForm() {
     const d = new FormData(e.currentTarget);
     const lines = [
       "Hi C3 Unisex Salon, I would like to book an appointment.",
+      `Branch: ${branch.name}`,
       `Name: ${d.get("name")}`,
       `Phone: ${d.get("phone")}`,
       `Service: ${d.get("service")}`,
@@ -35,7 +39,7 @@ export function BookingForm() {
       d.get("message") ? `Message: ${d.get("message")}` : "",
     ].filter(Boolean);
     // No server is configured: the request is delivered to the salon via WhatsApp.
-    window.open(waLink(lines.join("\n")), "_blank", "noopener,noreferrer");
+    window.open(waLink(branch, lines.join("\n")), "_blank", "noopener,noreferrer");
     setDone(true);
   }
 
@@ -61,7 +65,7 @@ export function BookingForm() {
           <m.form key="form" exit={{ opacity: 0 }} onSubmit={onSubmit} className="grid gap-5 sm:grid-cols-2" aria-label="Book an appointment">
             <div className="sm:col-span-2">
               <h3 className="display text-3xl">Book an appointment</h3>
-              <p className="mt-1 text-sm text-muted">We’ll confirm your slot on WhatsApp or by phone.</p>
+              <p className="mt-1 text-sm text-muted">Booking at our {branch.name} branch. We’ll confirm your slot on WhatsApp or by phone.</p>
             </div>
             <div>
               <label htmlFor="name" className={label}>Name</label>
@@ -73,15 +77,18 @@ export function BookingForm() {
             </div>
             <div className="sm:col-span-2">
               <label htmlFor="service" className={label}>Service</label>
-              <select id="service" name="service" required defaultValue={known ? preset : ""} className={field}>
+              <select key={branch.id} id="service" name="service" required defaultValue={known ? preset : ""} className={field}>
                 <option value="" disabled>Select a service</option>
-                {CATEGORIES.map((c) => (
-                  <optgroup key={c.id} label={c.title}>
-                    {SERVICES.filter((s) => s.category === c.id).map((s) => (
-                      <option key={s.name} value={s.name}>{s.name} · from {s.from}</option>
-                    ))}
-                  </optgroup>
-                ))}
+                {CATEGORIES.map((c) => {
+                  const inCategory = services.filter((s) => s.category === c.id);
+                  return inCategory.length ? (
+                    <optgroup key={c.id} label={c.title}>
+                      {inCategory.map((s) => (
+                        <option key={s.name} value={s.name}>{s.name} · from {s.from}</option>
+                      ))}
+                    </optgroup>
+                  ) : null;
+                })}
               </select>
             </div>
             <div>

@@ -2,20 +2,21 @@
 
 import { useState } from "react";
 import { MapPin } from "lucide-react";
-import { SITE } from "@/lib/site";
+import { useBranch } from "./Branch";
 
 /**
- * Click-to-load Google Map. Keeps the third-party iframe out of the initial
- * page load. Replace SITE.mapEmbedUrl with the exact embed once the address is confirmed.
+ * Click-to-load Google Map of the selected branch. Keeps the third-party
+ * iframe out of the initial page load.
  */
 export function MapEmbed() {
   const [load, setLoad] = useState(false);
+  const { branch } = useBranch();
   return (
     <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[2rem] border border-line bg-sand">
       {load ? (
         <iframe
-          src={SITE.mapEmbedUrl}
-          title="Map showing C3 Unisex Salon, Belgaum"
+          src={branch.mapEmbedUrl}
+          title={`Map showing C3 Unisex Salon, ${branch.name}`}
           className="absolute inset-0 h-full w-full"
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"

@@ -1,16 +1,20 @@
+"use client";
+
 import Link from "next/link";
 import { WhatsAppIcon } from "./ui";
 import { bookHref, waLink } from "@/lib/site";
+import { useBranch } from "./Branch";
 
 /** Floating button on desktop; sticky two-action bar on mobile. */
 export function WhatsAppButton() {
+  const { branch } = useBranch();
   return (
     <>
       <a
-        href={waLink()}
+        href={waLink(branch)}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Chat with C3 Unisex Salon on WhatsApp"
+        aria-label={`Chat with C3 Unisex Salon ${branch.name} on WhatsApp`}
         className="group fixed bottom-7 right-7 z-40 hidden size-14 place-items-center rounded-full bg-[#25D366] text-white shadow-[var(--shadow-soft)] transition-transform duration-300 hover:scale-110 md:grid"
       >
         <span className="absolute inset-0 rounded-full bg-[#25D366] [animation:ping-soft_2.8s_ease-out_infinite]" aria-hidden />
@@ -26,7 +30,7 @@ export function WhatsAppButton() {
             Book Appointment
           </Link>
           <a
-            href={waLink()}
+            href={waLink(branch)}
             target="_blank"
             rel="noopener noreferrer"
             className="flex min-h-12 items-center justify-center gap-2 rounded-full border border-line bg-white text-sm font-semibold text-ink"

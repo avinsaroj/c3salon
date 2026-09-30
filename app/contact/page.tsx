@@ -7,17 +7,21 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { Reveal } from "@/components/motion";
 import { Button, Instagram, JsonLd, WhatsAppIcon } from "@/components/ui";
 import { IMG } from "@/lib/images";
-import { FAQS } from "@/lib/services";
+import { faqsFor } from "@/lib/services";
 import { SITE, waLink } from "@/lib/site";
+import { getBranch } from "@/lib/branch-server";
+import { BranchSelect } from "@/components/Branch";
 import { breadcrumbSchema, faqSchema, pageMeta } from "@/lib/schema";
 
 export const metadata = pageMeta(
   "Contact & Book an Appointment",
-  "Book an appointment at C3 Unisex Salon, Belgaum. Call +91 99021 06797, message us on WhatsApp, or send a booking request online.",
+  "Book an appointment at C3 Unisex Salon in Belgaum or Kolhapur. Call your branch, message us on WhatsApp, or send a booking request online.",
   "/contact",
 );
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const branch = await getBranch();
+  const faqs = faqsFor(branch);
   return (
     <>
       <PageHero
@@ -33,14 +37,21 @@ export default function ContactPage() {
 
       <section aria-labelledby="visit-h" className="container-lux grid items-center gap-12 py-20 md:py-28 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <SectionHeading id="visit-h" eyebrow="Visit" lines={["Find us in", "Belgaum"]} accent={1} />
+          <SectionHeading id="visit-h" eyebrow="Visit" lines={["Find us in", branch.name]} accent={1} />
+          <div className="mt-6">
+            <BranchSelect />
+          </div>
           <Reveal>
             <address className="mt-8 space-y-3 not-italic">
-              <p className="text-lg font-bold">C3 Unisex Salon</p>
-              <p className="text-muted">Belgaum, Karnataka</p>
+              <p className="text-lg font-bold">C3 Unisex Salon · {branch.name}</p>
+              <p className="text-muted">
+                {branch.street}
+                <br />
+                {branch.city} {branch.postalCode}, {branch.region}
+              </p>
               <p>
-                <a href={`tel:${SITE.phone}`} className="inline-flex items-center gap-2 font-medium hover:underline">
-                  <Phone className="size-4" aria-hidden /> {SITE.phoneDisplay}
+                <a href={`tel:${branch.phone}`} className="inline-flex items-center gap-2 font-medium hover:underline">
+                  <Phone className="size-4" aria-hidden /> {branch.phoneDisplay}
                 </a>
               </p>
               <p>
@@ -51,9 +62,9 @@ export default function ContactPage() {
             </address>
           </Reveal>
           <Reveal delay={0.1} className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Button href={SITE.directionsUrl}><MapPin className="size-4" aria-hidden /> Get Directions</Button>
-            <Button href={`tel:${SITE.phone}`} variant="outline"><Phone className="size-4" aria-hidden /> Call Us</Button>
-            <Button href={waLink()} variant="outline"><WhatsAppIcon className="size-4 text-[#1DA851]" /> WhatsApp</Button>
+            <Button href={branch.directionsUrl}><MapPin className="size-4" aria-hidden /> Get Directions</Button>
+            <Button href={`tel:${branch.phone}`} variant="outline"><Phone className="size-4" aria-hidden /> Call Us</Button>
+            <Button href={waLink(branch)} variant="outline"><WhatsAppIcon className="size-4 text-[#1DA851]" /> WhatsApp</Button>
           </Reveal>
         </div>
         <Reveal delay={0.1} className="lg:col-span-7">
@@ -62,10 +73,10 @@ export default function ContactPage() {
       </section>
 
       <div className="bg-sand/50">
-        <Faq items={FAQS} />
+        <Faq items={faqs} />
       </div>
 
-      <JsonLd data={faqSchema(FAQS)} />
+      <JsonLd data={faqSchema(faqs)} />
       <JsonLd data={breadcrumbSchema("Contact", "/contact")} />
     </>
   );

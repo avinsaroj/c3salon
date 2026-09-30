@@ -5,7 +5,9 @@ export default function NotFound() {
   return (
     <section className="grid min-h-[100svh] place-items-center bg-sand/60 px-5 text-center">
       <div>
-        <LogoMark draw="mount" className="mx-auto w-32 text-ink" />
+        <div className="mx-auto w-fit rounded-3xl bg-logo-bg px-7 py-6">
+          <LogoMark draw="mount" className="block w-32 text-logo" />
+        </div>
         <p className="mt-10 text-sm font-bold tracking-[0.2em] text-bronze">404</p>
         <h1 className="display mt-3 text-[clamp(2.8rem,7vw,5rem)]">
           This page has <span className="italic text-bronze">stepped out.</span>

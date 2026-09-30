@@ -12,7 +12,7 @@ export async function Footer() {
       <div className="container-lux">
         <div className="grid gap-12 pb-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
-            <Logo className="w-44 text-gold" />
+            <Logo className="w-44 text-logo" />
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-cream/60">
               Premium hair, beauty and grooming for women, men and families in Belgaum and Kolhapur.
             </p>

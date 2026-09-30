@@ -29,7 +29,9 @@ export default function Template({ children }: { children: React.ReactNode }) {
           transition={{ duration: 0.85, delay: 0.2, ease: EASE }}
         >
           <m.div initial={{ opacity: 1 }} animate={{ opacity: 0 }} transition={{ duration: 0.25, delay: 0.15 }}>
-            <LogoMark className="w-28 text-ink" />
+            <div className="rounded-3xl bg-logo-bg px-6 py-5">
+              <LogoMark className="block w-28 text-logo" />
+            </div>
           </m.div>
         </m.div>
       )}

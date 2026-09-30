@@ -40,7 +40,7 @@ export const BELGAUM_PRICING: PriceTab[] = [
         rows: [
           { name: "Ladies Hair Cut", price: p(600) },
           { name: "Shoulder to Long Girl", note: "Under 10 years", price: p(500) },
-          { name: "Men's Hair Cut", price: p(150) },
+          { name: "Men's Hair Cut", price: p(200) },
           { name: "Child Hair Cut", price: p(150) },
           { name: "Baby Hair Cut", price: p(100) },
           { name: "Flix Cut", price: p(100) },
@@ -221,8 +221,8 @@ export const KOLHAPUR_PRICING: PriceTab[] = [
         rows: [
           { name: "Ladies Hair Cut", price: p(600) },
           { name: "Shoulder to Long Girl", note: "Under 10 years", price: p(500) },
-          { name: "Adult Hair Cut", price: p(250) },
-          { name: "Child Hair Cut", price: p(200) },
+          { name: "Adult Hair Cut", price: p(300) },
+          { name: "Child Hair Cut", price: p(250) },
           { name: "Baby Hair Cut", price: p(150) },
           { name: "Flix Cut", price: p(100) },
         ],
@@ -366,7 +366,7 @@ export const KOLHAPUR_PRICING: PriceTab[] = [
       {
         title: "Beard & Massage",
         rows: [
-          { name: "Beard", price: p(150) },
+          { name: "Beard", price: p(200) },
           { name: "Beard Color", price: p(400) },
           { name: "Gents Head Massage", price: p(400) },
           { name: "Ladies Head Massage", price: p(500) },

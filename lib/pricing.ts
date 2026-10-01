@@ -30,6 +30,36 @@ const tiers = (prices: Price[], labels = LEN): Tier[] =>
 
 export const LENGTH_NOTE = "Price depends on hair length and density.";
 
+/** Prices edited at the price admin route, keyed by priceKey(), laid over a rate card. */
+export type PriceOverrides = Record<string, Price>;
+
+/** Stable id for one price line: tab, group and row/tier label. */
+export const priceKey = (tab: string, group: string, label: string) => `${tab}/${group}/${label}`;
+
+/** Every price line in a rate card, flattened. */
+export function priceLines(tabs: PriceTab[]) {
+  return tabs.flatMap((t) =>
+    t.groups.flatMap((g) =>
+      [...(g.rows ?? []).map((r) => ({ label: r.name, price: r.price })), ...(g.tiers ?? [])].map((l) => ({
+        key: priceKey(t.id, g.title, l.label),
+        label: `${g.title} · ${l.label}`,
+        price: l.price,
+      })),
+    ),
+  );
+}
+
+export function applyOverrides(tabs: PriceTab[], o: PriceOverrides): PriceTab[] {
+  return tabs.map((t) => ({
+    ...t,
+    groups: t.groups.map((g) => ({
+      ...g,
+      rows: g.rows?.map((r) => ({ ...r, price: o[priceKey(t.id, g.title, r.name)] ?? r.price })),
+      tiers: g.tiers?.map((x) => ({ ...x, price: o[priceKey(t.id, g.title, x.label)] ?? x.price })),
+    })),
+  }));
+}
+
 export const BELGAUM_PRICING: PriceTab[] = [
   {
     id: "hair",

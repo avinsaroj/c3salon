@@ -2,6 +2,7 @@ import { PageHero } from "@/components/PageHero";
 import { Pricing } from "@/components/Pricing";
 import { CtaBand } from "@/components/CtaBand";
 import { JsonLd } from "@/components/ui";
+import { getPricing } from "@/lib/price-store";
 import { breadcrumbSchema, pageMeta } from "@/lib/schema";
 
 export const metadata = pageMeta(
@@ -10,7 +11,7 @@ export const metadata = pageMeta(
   "/pricing",
 );
 
-export default function PricingPage() {
+export default async function PricingPage() {
   return (
     <>
       <PageHero
@@ -20,7 +21,7 @@ export default function PricingPage() {
         accent={1}
         intro="Clear prices for every service at each branch. For colour, highlights and treatments, the rate depends on your hair's length and density."
       />
-      <Pricing />
+      <Pricing pricing={await getPricing()} />
       <CtaBand />
       <JsonLd data={breadcrumbSchema("Pricing", "/pricing")} />
     </>

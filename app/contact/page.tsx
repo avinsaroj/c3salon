@@ -8,7 +8,7 @@ import { Reveal } from "@/components/motion";
 import { Button, Instagram, JsonLd, WhatsAppIcon } from "@/components/ui";
 import { IMG } from "@/lib/images";
 import { faqsFor } from "@/lib/services";
-import { SITE, waLink } from "@/lib/site";
+import { waLink } from "@/lib/site";
 import { getBranch } from "@/lib/branch-server";
 import { BranchSelect } from "@/components/Branch";
 import { breadcrumbSchema, faqSchema, pageMeta } from "@/lib/schema";
@@ -55,8 +55,8 @@ export default async function ContactPage() {
                 </a>
               </p>
               <p>
-                <a href={SITE.instagramUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-medium hover:underline">
-                  <Instagram className="size-4" /> @{SITE.instagram}
+                <a href={branch.instagramUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-medium hover:underline">
+                  <Instagram className="size-4" /> @{branch.instagram}
                 </a>
               </p>
             </address>

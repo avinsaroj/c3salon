@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Clock, MapPin, Phone } from "lucide-react";
-import { SITE, waLink } from "@/lib/site";
+import { waLink } from "@/lib/site";
 import { getBranch } from "@/lib/branch-server";
 import { BookingForm } from "./BookingForm";
 import { Reveal, SplitReveal } from "./motion";
@@ -31,7 +31,7 @@ export async function BookingSection() {
             <ul className="mt-12 space-y-4 text-sm text-cream/70">
               <li className="flex items-center gap-3"><MapPin className="size-4 shrink-0 text-gold" aria-hidden /> {branch.street}, {branch.city} {branch.postalCode}</li>
               <li className="flex items-center gap-3"><Phone className="size-4 text-gold" aria-hidden /> {branch.phoneDisplay}</li>
-              <li className="flex items-center gap-3"><Instagram className="size-4 text-gold" /> @{SITE.instagram}</li>
+              <li className="flex items-center gap-3"><Instagram className="size-4 text-gold" /> @{branch.instagram}</li>
               <li className="flex items-center gap-3"><Clock className="size-4 text-gold" aria-hidden /> Call or WhatsApp to check today’s availability</li>
             </ul>
           </Reveal>

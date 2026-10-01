@@ -12,6 +12,8 @@ export type Branch = {
   phone: string;
   phoneDisplay: string;
   whatsapp: string;
+  instagram: string;
+  instagramUrl: string;
   directionsUrl: string;
   mapEmbedUrl: string;
   reviewUrl: string;
@@ -21,7 +23,7 @@ export type Branch = {
 /** A price per branch; a missing key means the branch's rate card doesn't list it. */
 export type Prices = Partial<Record<BranchId, string>>;
 
-type BranchInput = Omit<Branch, "directionsUrl" | "mapEmbedUrl" | "reviewUrl"> & { reviewUrl?: string };
+type BranchInput = Omit<Branch, "directionsUrl" | "mapEmbedUrl" | "reviewUrl" | "instagramUrl"> & { reviewUrl?: string };
 
 function branch(b: BranchInput): Branch {
   const q = encodeURIComponent(`C3 Unisex Salon, ${b.street}, ${b.city} ${b.postalCode}`);
@@ -29,6 +31,7 @@ function branch(b: BranchInput): Branch {
     ...b,
     directionsUrl: `https://www.google.com/maps/search/?api=1&query=${q}`,
     mapEmbedUrl: `https://www.google.com/maps?q=${q}&output=embed`,
+    instagramUrl: `https://www.instagram.com/${b.instagram}/`,
     // The printed rate cards have a Google review QR code but no readable URL.
     reviewUrl:
       b.reviewUrl ??
@@ -47,6 +50,7 @@ export const BRANCHES: Branch[] = [
     phone: "+919902106797",
     phoneDisplay: "+91 99021 06797",
     whatsapp: "919902106797",
+    instagram: "c3_unisex_salon_belgaum",
     reviewUrl: process.env.NEXT_PUBLIC_REVIEW_URL_BELGAUM,
     pricing: BELGAUM_PRICING,
   }),
@@ -60,6 +64,7 @@ export const BRANCHES: Branch[] = [
     phone: "+917798001238",
     phoneDisplay: "+91 77980 01238",
     whatsapp: "917798001238",
+    instagram: "c3__unisex_salon_kolhapur",
     reviewUrl: process.env.NEXT_PUBLIC_REVIEW_URL_KOLHAPUR,
     pricing: KOLHAPUR_PRICING,
   }),

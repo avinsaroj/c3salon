@@ -3,16 +3,17 @@ import { GalleryGrid } from "@/components/GalleryGrid";
 import { BeforeAfter } from "@/components/BeforeAfter";
 import { CtaBand } from "@/components/CtaBand";
 import { Button, Instagram, JsonLd } from "@/components/ui";
-import { SITE } from "@/lib/site";
+import { getBranch } from "@/lib/branch-server";
 import { breadcrumbSchema, pageMeta } from "@/lib/schema";
 
 export const metadata = pageMeta(
   "Gallery",
-  "Hair, makeup, bridal, skin and salon inspiration from C3 Unisex Salon. Follow @c3_unisex_salon_belgaum for our latest work.",
+  "Hair, makeup, bridal, skin and salon inspiration from C3 Unisex Salon. Follow us on Instagram for our latest work.",
   "/gallery",
 );
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const branch = await getBranch();
   return (
     <>
       <PageHero
@@ -22,8 +23,8 @@ export default function GalleryPage() {
         accent={1}
         intro="Colours, textures and looks we love to create. For our latest client work, follow us on Instagram."
       >
-        <Button href={SITE.instagramUrl} variant="outline">
-          <Instagram className="size-4" /> Follow @{SITE.instagram}
+        <Button href={branch.instagramUrl} variant="outline">
+          <Instagram className="size-4" /> Follow @{branch.instagram}
         </Button>
       </PageHero>
       <GalleryGrid />

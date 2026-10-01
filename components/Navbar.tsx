@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, m, useMotionValueEvent, useScroll } from "framer-motion";
 import { Menu, Phone, X } from "lucide-react";
-import { EASE, NAV, SITE, bookHref, waLink } from "@/lib/site";
+import { EASE, NAV, bookHref, waLink } from "@/lib/site";
 import { BranchSelect, useBranch } from "./Branch";
 import { LogoMark } from "./Logo";
 import { Instagram, WhatsAppIcon } from "./ui";
@@ -137,7 +137,7 @@ export function Navbar() {
                 <a href={waLink(branch)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp C3 Unisex Salon ${branch.name}`} className="grid size-12 place-items-center rounded-full border border-line">
                   <WhatsAppIcon className="size-5" />
                 </a>
-                <a href={SITE.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="C3 Unisex Salon on Instagram" className="grid size-12 place-items-center rounded-full border border-line">
+                <a href={branch.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="C3 Unisex Salon on Instagram" className="grid size-12 place-items-center rounded-full border border-line">
                   <Instagram className="size-5" />
                 </a>
               </div>

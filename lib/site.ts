@@ -1,12 +1,10 @@
 import type { Branch } from "./branches";
 
-/** Brand-wide details. Phone, address, map and prices are per branch: lib/branches.ts. */
+/** Brand-wide details. Phone, address, map, Instagram and prices are per branch: lib/branches.ts. */
 export const SITE = {
   name: "C3 Unisex Salon",
   tagline: "Cut, Color & Care",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://c3unisexsalon.example",
-  instagram: "c3_unisex_salon_belgaum",
-  instagramUrl: "https://www.instagram.com/c3_unisex_salon_belgaum/",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://c3unisexsalon.in",
 } as const;
 
 export const DEFAULT_WA_MESSAGE = "Hi C3 Unisex Salon, I would like to book an appointment.";

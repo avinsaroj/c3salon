@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { IMG } from "@/lib/images";
-import { SITE } from "@/lib/site";
+import { getBranch } from "@/lib/branch-server";
 import { Reveal } from "../motion";
 import { ArrowLink, Button, Instagram } from "../ui";
 import { SectionHeading } from "../SectionHeading";
@@ -15,7 +15,8 @@ const TILES = [
   { p: IMG.nails },
 ];
 
-export function GalleryPreview() {
+export async function GalleryPreview() {
+  const branch = await getBranch();
   return (
     <section aria-labelledby="gp-h" className="container-lux py-20 md:py-28">
       <SectionHeading
@@ -42,8 +43,8 @@ export function GalleryPreview() {
         ))}
       </ul>
       <Reveal className="mt-8 flex justify-center">
-        <Button href={SITE.instagramUrl} variant="outline">
-          <Instagram className="size-4" /> Follow us @{SITE.instagram}
+        <Button href={branch.instagramUrl} variant="outline">
+          <Instagram className="size-4" /> Follow us @{branch.instagram}
         </Button>
       </Reveal>
     </section>

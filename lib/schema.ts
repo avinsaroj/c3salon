@@ -64,7 +64,7 @@ export const businessSchema = {
       addressCountry: "IN",
     },
     hasMap: b.directionsUrl,
-    sameAs: [SITE.instagramUrl],
+    sameAs: [b.instagramUrl],
   })),
 };
 

@@ -27,7 +27,12 @@ export async function savePrices(_: SaveState, form: FormData): Promise<SaveStat
     if (min !== price.min || max !== price.max) overrides[key] = { min, max };
   }
 
-  await saveOverrides(branch.id, overrides);
+  try {
+    await saveOverrides(branch.id, overrides);
+  } catch (e) {
+    console.error("Saving prices failed", e);
+    return { ok: false, message: "Couldn't save prices. Please try again." };
+  }
   revalidatePath("/", "layout");
   return { ok: true, message: `${branch.name} prices saved.` };
 }

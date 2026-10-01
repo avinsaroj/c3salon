@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { Redis } from "@upstash/redis";
 import { cache } from "react";
 import { BRANCHES, type BranchId } from "./branches";
 import { applyOverrides, type PriceOverrides, type PriceTab } from "./pricing";
@@ -7,13 +8,19 @@ import { applyOverrides, type PriceOverrides, type PriceTab } from "./pricing";
 /**
  * Prices saved from the price admin route. Only lines that differ from
  * lib/pricing.ts are stored, so rate card edits in code still show through.
- * Delete the file to go back to the printed rate cards.
+ * Stored in Upstash Redis when its env vars are set (Vercel's filesystem is
+ * read-only), otherwise in a local JSON file. Delete the key or file to go
+ * back to the printed rate cards.
  */
 const FILE = path.join(process.cwd(), "data", "price-overrides.json");
+const KEY = "price-overrides";
+const redis =
+  process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL ? Redis.fromEnv() : null;
 
 type Store = Partial<Record<BranchId, PriceOverrides>>;
 
 async function read(): Promise<Store> {
+  if (redis) return (await redis.get<Store>(KEY)) ?? {};
   try {
     return JSON.parse(await readFile(FILE, "utf8"));
   } catch (e) {
@@ -34,8 +41,12 @@ export const getPricing = cache(async (): Promise<Record<BranchId, PriceTab[]>> 
 export async function saveOverrides(id: BranchId, overrides: PriceOverrides) {
   const store = await read();
   store[id] = overrides;
-  await mkdir(path.dirname(FILE), { recursive: true });
-  await writeFile(FILE, JSON.stringify(store, null, 2));
+  if (redis) {
+    await redis.set(KEY, store);
+  } else {
+    await mkdir(path.dirname(FILE), { recursive: true });
+    await writeFile(FILE, JSON.stringify(store, null, 2));
+  }
 }
 
 /** The admin route is /price-admin/<PRICE_ADMIN_KEY>; with no key set it is disabled. */

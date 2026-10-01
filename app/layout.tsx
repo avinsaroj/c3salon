@@ -4,6 +4,7 @@ import "./globals.css";
 import { SITE } from "@/lib/site";
 import { seo, businessSchema } from "@/lib/schema";
 import { getBranch } from "@/lib/branch-server";
+import { getPricing } from "@/lib/price-store";
 import { Providers } from "@/components/Providers";
 import { BranchPrompt } from "@/components/Branch";
 import { Navbar } from "@/components/Navbar";
@@ -45,6 +46,7 @@ export const viewport: Viewport = { themeColor: "#fbf8f4" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const branch = await getBranch();
+  const pricing = await getPricing();
   return (
     <html lang="en-IN" className={`${display.variable} ${sans.variable}`}>
       <body>
@@ -54,7 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           Skip to content
         </a>
-        <Providers branch={branch.id}>
+        <Providers branch={branch.id} pricing={pricing}>
           <Navbar />
           <main id="main">{children}</main>
           <Footer />

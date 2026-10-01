@@ -33,7 +33,7 @@ export default async function ServicesPage() {
       </PageHero>
       <ServicesCatalog />
       <CtaBand />
-      <JsonLd data={servicesSchema(servicesFor(branch.id), branch)} />
+      <JsonLd data={servicesSchema(servicesFor(branch), branch)} />
       <JsonLd data={breadcrumbSchema("Services", "/services")} />
     </>
   );

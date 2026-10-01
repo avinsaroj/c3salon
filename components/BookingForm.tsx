@@ -20,7 +20,7 @@ function today() {
 export function BookingForm() {
   const params = useSearchParams();
   const { branch } = useBranch();
-  const services = servicesFor(branch.id);
+  const services = servicesFor(branch);
   const preset = params.get("service") ?? "";
   const known = services.some((s) => s.name === preset);
   const [done, setDone] = useState(false);

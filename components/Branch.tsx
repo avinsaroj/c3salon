@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, m } from "framer-motion";
 import { Check, ChevronDown, MapPin, X } from "lucide-react";
 import { BRANCHES, BRANCH_COOKIE, DEFAULT_BRANCH, branchById, type Branch, type BranchId } from "@/lib/branches";
+import type { PriceTab } from "@/lib/pricing";
 import { EASE } from "@/lib/site";
 import { Eyebrow } from "./ui";
 
@@ -16,8 +17,17 @@ const BranchContext = createContext<{ branch: Branch; select: (id: BranchId) => 
 /**
  * The chosen branch lives in a cookie so server components render the right
  * phone, address and prices on the first paint. Switching refreshes them.
+ * `pricing` is every branch's live price list, so `branch.pricing` includes saved edits.
  */
-export function BranchProvider({ initial, children }: { initial: BranchId; children: React.ReactNode }) {
+export function BranchProvider({
+  initial,
+  pricing,
+  children,
+}: {
+  initial: BranchId;
+  pricing: Record<BranchId, PriceTab[]>;
+  children: React.ReactNode;
+}) {
   const router = useRouter();
   const [id, setId] = useState(initial);
   useEffect(() => setId(initial), [initial]);
@@ -29,7 +39,7 @@ export function BranchProvider({ initial, children }: { initial: BranchId; child
     router.refresh();
   };
 
-  return <BranchContext.Provider value={{ branch: branchById(id), select }}>{children}</BranchContext.Provider>;
+  return <BranchContext.Provider value={{ branch: { ...branchById(id), pricing: pricing[id] }, select }}>{children}</BranchContext.Provider>;
 }
 
 export function useBranch() {

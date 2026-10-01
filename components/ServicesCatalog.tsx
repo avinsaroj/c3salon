@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { CATEGORIES, servicesFor, type CategoryId } from "@/lib/services";
+import { lowestPrice } from "@/lib/pricing";
 import { EASE, bookHref } from "@/lib/site";
 import { ArrowLink } from "./ui";
 import { TabBar } from "./TabBar";
@@ -15,7 +16,7 @@ type Filter = "all" | CategoryId;
 
 export function ServicesCatalog() {
   const { branch } = useBranch();
-  const services = servicesFor(branch.id);
+  const services = servicesFor(branch);
   // Categories with nothing on this branch's rate card are left out.
   const categories = CATEGORIES.filter((c) => services.some((s) => s.category === c.id));
   const filters: { id: Filter; label: string }[] = [
@@ -69,7 +70,7 @@ export function ServicesCatalog() {
               <h2 className="display mt-1 text-5xl">{category.title}</h2>
               <p className="mt-3 max-w-xl leading-relaxed text-muted">{category.intro}</p>
               <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2">
-                <span className="rounded-full bg-cream px-4 py-2 text-sm font-bold">From {category.from[branch.id]}</span>
+                <span className="rounded-full bg-cream px-4 py-2 text-sm font-bold">From ₹{lowestPrice(branch.pricing, category.pricingTab)}</span>
                 <ArrowLink href={`/pricing#${category.pricingTab}`}>Full prices</ArrowLink>
               </div>
             </div>

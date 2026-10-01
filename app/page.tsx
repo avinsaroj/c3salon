@@ -8,14 +8,16 @@ import { GalleryPreview } from "@/components/home/GalleryPreview";
 import { WhyC3 } from "@/components/WhyC3";
 import { Testimonials } from "@/components/Testimonials";
 import { BookingSection } from "@/components/BookingSection";
+import { getPricing } from "@/lib/price-store";
 
-export default function Home() {
+export default async function Home() {
+  const pricing = await getPricing();
   return (
     <>
-      <Hero />
+      <Hero pricing={pricing} />
       <CategoryCards />
       <Intro />
-      <FeaturedCarousel />
+      <FeaturedCarousel pricing={pricing} />
       <WhyC3 />
       <BridalBanner />
       <PricePreview />

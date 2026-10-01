@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Phone } from "lucide-react";
 import { NAV, SITE, bookHref, waLink } from "@/lib/site";
 import { getBranch } from "@/lib/branch-server";
-import { LogoMark } from "./Logo";
+import { Logo } from "./Logo";
 import { Button, Instagram, WhatsAppIcon } from "./ui";
 
 export async function Footer() {
@@ -12,13 +12,7 @@ export async function Footer() {
       <div className="container-lux">
         <div className="grid gap-12 pb-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-3">
-              <LogoMark className="w-14 text-gold" title="C3 Unisex Salon" />
-              <div>
-                <p className="text-sm font-bold tracking-[0.14em]">C3 UNISEX SALON</p>
-                <p className="text-xs tracking-[0.2em] text-cream/55">CUT · COLOR · CARE</p>
-              </div>
-            </div>
+            <Logo className="w-44 text-logo" />
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-cream/60">
               Premium hair, beauty and grooming for women, men and families in Belgaum and Kolhapur.
             </p>

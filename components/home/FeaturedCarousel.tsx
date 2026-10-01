@@ -6,18 +6,19 @@ import { useRef } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { IMG, type Photo } from "@/lib/images";
 import { bookHref } from "@/lib/site";
-import type { Prices } from "@/lib/branches";
+import type { BranchId } from "@/lib/branches";
+import { findPrice, priceKey, type PriceTab } from "@/lib/pricing";
 import { useBranch } from "../Branch";
 import { Reveal } from "../motion";
 import { SectionHeading } from "../SectionHeading";
 
-// "from" prices per branch, from lib/pricing.ts.
-const FEATURED: { title: string; photo: Photo; desc: string; from: Prices; href: string; tag?: string }[] = [
+// "From" price is the live price list line named by `from`; a branch without that line shows none.
+const FEATURED: { title: string; photo: Photo; desc: string; from: string; href: string; tag?: string }[] = [
   {
     title: "Bridal Makeup",
     photo: IMG.bridalBraid,
     desc: "A flawless, photogenic look for your wedding day, designed around you.",
-    from: { belgaum: "₹8000" },
+    from: priceKey("makeup", "Makeup", "Bridal Makeup"),
     href: "/bridal",
     tag: "Signature",
   },
@@ -25,35 +26,36 @@ const FEATURED: { title: string; photo: Photo; desc: string; from: Prices; href:
     title: "Hair Color",
     photo: IMG.hairColor,
     desc: "Global colour and highlights blended for depth, dimension and shine.",
-    from: { belgaum: "₹2500", kolhapur: "₹3000" },
+    from: priceKey("hair", "Global Color · Virgin Hair", "Shoulder length"),
     href: bookHref("Global Color"),
   },
   {
     title: "Hair Transformation",
     photo: IMG.hairWaves,
     desc: "Straightening and smoothing for sleek, manageable hair.",
-    from: { belgaum: "₹4500", kolhapur: "₹4500" },
+    from: priceKey("hair", "Straightening Treatment", "Shoulder length"),
     href: bookHref("Straightening Treatment"),
   },
   {
     title: "Premium Facial",
     photo: IMG.skinGlow,
     desc: "Radiance-restoring skin care in a calm, unhurried setting.",
-    from: { belgaum: "₹2000", kolhapur: "₹2200" },
+    from: priceKey("skin", "Skin · Facials", "Premium Facial"),
     href: bookHref("Premium Facial"),
   },
   {
     title: "Protein Treatment",
     photo: IMG.hairWoman,
     desc: "Strength and smoothness for tired, over-processed hair.",
-    from: { belgaum: "₹4500", kolhapur: "₹5000" },
+    from: priceKey("hair", "Protein Treatment", "Shoulder length"),
     href: bookHref("Protein Treatment"),
   },
 ];
 
-export function FeaturedCarousel() {
+export function FeaturedCarousel({ pricing }: { pricing: Record<BranchId, PriceTab[]> }) {
   const track = useRef<HTMLUListElement>(null);
   const { branch } = useBranch();
+  const from = FEATURED.map((f) => findPrice(pricing[branch.id], f.from));
   const scroll = (dir: 1 | -1) => {
     const el = track.current;
     if (!el) return;
@@ -104,9 +106,9 @@ export function FeaturedCarousel() {
                 {f.tag && (
                   <span className="absolute left-4 top-4 rounded-full bg-ink px-3 py-1.5 text-xs font-semibold text-cream">{f.tag}</span>
                 )}
-                {f.from[branch.id] && (
+                {from[i] && (
                   <span className="absolute bottom-4 right-4 rounded-full bg-cream/90 px-3.5 py-1.5 text-sm font-bold backdrop-blur">
-                    From {f.from[branch.id]}
+                    From ₹{from[i].min}
                   </span>
                 )}
               </div>

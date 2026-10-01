@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import { ChevronDown, Info } from "lucide-react";
-import { LENGTH_NOTE, formatPrice, type Group } from "@/lib/pricing";
+import type { BranchId } from "@/lib/branches";
+import { LENGTH_NOTE, formatPrice, type Group, type PriceTab } from "@/lib/pricing";
 import { EASE } from "@/lib/site";
 import { BranchSelect, useBranch } from "./Branch";
 import { TabBar } from "./TabBar";
@@ -73,9 +74,10 @@ function PricingCategory({ group, initialOpen, expandAll }: { group: Group; init
   );
 }
 
-export function Pricing() {
+/** `pricing` is every branch's live list (rate card plus saved edits) from lib/price-store.ts. */
+export function Pricing({ pricing }: { pricing: Record<BranchId, PriceTab[]> }) {
   const { branch } = useBranch();
-  const tabs = branch.pricing;
+  const tabs = pricing[branch.id];
   const [tab, setTab] = useState(tabs[0].id);
   const [desktop, setDesktop] = useState(false);
   // A tab can be missing at the other branch (Kolhapur has no makeup list).

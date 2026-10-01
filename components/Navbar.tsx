@@ -39,7 +39,9 @@ export function Navbar() {
       >
         <div className="container-lux flex items-center justify-between gap-3 sm:gap-6">
           <Link href="/" className="flex items-center gap-3" aria-label="C3 Unisex Salon, home">
-            <LogoMark className="w-10 text-ink" />
+            <span className="rounded-xl bg-logo-bg px-2.5 py-2">
+              <LogoMark className="block w-14 text-logo" />
+            </span>
             <span className="hidden text-sm font-bold leading-tight tracking-[0.14em] min-[400px]:block">UNISEX SALON</span>
           </Link>
 

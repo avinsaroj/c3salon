@@ -11,6 +11,9 @@
   --color-bronze: #8a6a3a;
   --color-gold: #d9bf8c;
   --color-line: rgb(30 25 22 / 0.1);
+  /* Official logo colours, sampled from the logo artwork. */
+  --color-logo: #fdc300;
+  --color-logo-bg: #020305;
 
   --font-display: var(--font-instrument), "Times New Roman", serif;
   --font-sans: var(--font-jakarta), system-ui, sans-serif;

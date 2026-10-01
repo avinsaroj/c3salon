@@ -30,6 +30,50 @@ const tiers = (prices: Price[], labels = LEN): Tier[] =>
 
 export const LENGTH_NOTE = "Price depends on hair length and density.";
 
+/** Prices edited at the price admin route, keyed by priceKey(), laid over a rate card. */
+export type PriceOverrides = Record<string, Price>;
+
+/** Stable id for one price line: tab, group and row/tier label. */
+export const priceKey = (tab: string, group: string, label: string) => `${tab}/${group}/${label}`;
+
+/** Every price line in a rate card, flattened. */
+export function priceLines(tabs: PriceTab[]) {
+  return tabs.flatMap((t) =>
+    t.groups.flatMap((g) =>
+      [...(g.rows ?? []).map((r) => ({ label: r.name, price: r.price })), ...(g.tiers ?? [])].map((l) => ({
+        key: priceKey(t.id, g.title, l.label),
+        label: `${g.title} · ${l.label}`,
+        price: l.price,
+      })),
+    ),
+  );
+}
+
+/** One line's price, or undefined when this rate card doesn't list it. */
+export function findPrice(tabs: PriceTab[], key: string) {
+  return priceLines(tabs).find((l) => l.key === key)?.price;
+}
+
+/** The cheapest price in a tab, for "From ₹…" labels; undefined if the branch lacks the tab. */
+export function lowestPrice(tabs: PriceTab[], tabId: string) {
+  const lines = priceLines(tabs.filter((t) => t.id === tabId));
+  return lines.length ? Math.min(...lines.map((l) => l.price.min)) : undefined;
+}
+
+/** "₹600", or "from ₹500" for starting prices and ranges. */
+export const startingPrice = (p: Price, from = false) => (from || p.max ? `from ₹${p.min}` : `₹${p.min}`);
+
+export function applyOverrides(tabs: PriceTab[], o: PriceOverrides): PriceTab[] {
+  return tabs.map((t) => ({
+    ...t,
+    groups: t.groups.map((g) => ({
+      ...g,
+      rows: g.rows?.map((r) => ({ ...r, price: o[priceKey(t.id, g.title, r.name)] ?? r.price })),
+      tiers: g.tiers?.map((x) => ({ ...x, price: o[priceKey(t.id, g.title, x.label)] ?? x.price })),
+    })),
+  }));
+}
+
 export const BELGAUM_PRICING: PriceTab[] = [
   {
     id: "hair",
@@ -40,7 +84,7 @@ export const BELGAUM_PRICING: PriceTab[] = [
         rows: [
           { name: "Ladies Hair Cut", price: p(600) },
           { name: "Shoulder to Long Girl", note: "Under 10 years", price: p(500) },
-          { name: "Men's Hair Cut", price: p(150) },
+          { name: "Men's Hair Cut", price: p(200) },
           { name: "Child Hair Cut", price: p(150) },
           { name: "Baby Hair Cut", price: p(100) },
           { name: "Flix Cut", price: p(100) },
@@ -221,8 +265,8 @@ export const KOLHAPUR_PRICING: PriceTab[] = [
         rows: [
           { name: "Ladies Hair Cut", price: p(600) },
           { name: "Shoulder to Long Girl", note: "Under 10 years", price: p(500) },
-          { name: "Adult Hair Cut", price: p(250) },
-          { name: "Child Hair Cut", price: p(200) },
+          { name: "Adult Hair Cut", price: p(300) },
+          { name: "Child Hair Cut", price: p(250) },
           { name: "Baby Hair Cut", price: p(150) },
           { name: "Flix Cut", price: p(100) },
         ],
@@ -366,7 +410,7 @@ export const KOLHAPUR_PRICING: PriceTab[] = [
       {
         title: "Beard & Massage",
         rows: [
-          { name: "Beard", price: p(150) },
+          { name: "Beard", price: p(200) },
           { name: "Beard Color", price: p(400) },
           { name: "Gents Head Massage", price: p(400) },
           { name: "Ladies Head Massage", price: p(500) },

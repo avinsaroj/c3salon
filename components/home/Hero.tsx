@@ -6,19 +6,22 @@ import { Phone, Sparkles } from "lucide-react";
 import { IMG } from "@/lib/images";
 import { EASE, bookHref, waLink } from "@/lib/site";
 import type { BranchId } from "@/lib/branches";
+import { findPrice, priceKey, startingPrice, type PriceTab } from "@/lib/pricing";
 import { Magnetic, Marquee, RotatingBadge, SplitReveal } from "../motion";
 import { Button, WhatsAppIcon } from "../ui";
 import { useBranch } from "../Branch";
 
-// Floating price badge, from each branch's price list in lib/pricing.ts.
-const BADGE: Record<BranchId, { label: string; price: string }> = {
-  belgaum: { label: "Bridal Makeup", price: "from ₹8000" },
-  kolhapur: { label: "Luxury Facial 24K Gold", price: "₹3500" },
+// Floating price badge: a line from each branch's live price list.
+const BADGE: Record<BranchId, { label: string; key: string; from?: boolean }> = {
+  belgaum: { label: "Bridal Makeup", key: priceKey("makeup", "Makeup", "Bridal Makeup"), from: true },
+  kolhapur: { label: "Luxury Facial 24K Gold", key: priceKey("skin", "Skin · Facials", "Luxury Facial 24K Gold") },
 };
 
-export function Hero() {
+export function Hero({ pricing }: { pricing: Record<BranchId, PriceTab[]> }) {
   const reduce = useReducedMotion();
   const { branch } = useBranch();
+  const badge = BADGE[branch.id];
+  const badgePrice = findPrice(pricing[branch.id], badge.key);
   const fade = (delay: number, y = 18) => ({
     initial: reduce ? false : { opacity: 0, y },
     animate: { opacity: 1, y: 0 },
@@ -119,8 +122,8 @@ export function Hero() {
                   <Sparkles className="size-5" aria-hidden />
                 </span>
                 <div>
-                  <p className="text-xs text-muted">{BADGE[branch.id].label}</p>
-                  <p className="text-sm font-bold">{BADGE[branch.id].price}</p>
+                  <p className="text-xs text-muted">{badge.label}</p>
+                  {badgePrice && <p className="text-sm font-bold">{startingPrice(badgePrice, badge.from)}</p>}
                 </div>
               </div>
             </m.div>

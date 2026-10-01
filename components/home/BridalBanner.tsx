@@ -2,19 +2,18 @@ import { IMG } from "@/lib/images";
 import { waLink } from "@/lib/site";
 import { hasMakeup } from "@/lib/branches";
 import { getBranch } from "@/lib/branch-server";
+import { getPricing } from "@/lib/price-store";
+import { findPrice, formatPrice, priceKey } from "@/lib/pricing";
 import { ImageReveal, Reveal, SplitReveal } from "../motion";
 import { Button, Eyebrow, WhatsAppIcon } from "../ui";
 
-// Prices from lib/pricing.ts (Belgaum makeup; the Kolhapur card has none). Each applies to a single look.
-const LOOKS = [
-  { name: "Pre-Wedding", price: "₹3000" },
-  { name: "Haldi", price: "₹4000" },
-  { name: "Engagement", price: "₹5000" },
-  { name: "Bridal", price: "₹8000" },
-];
+// "<look> Makeup" lines from the live price list (Belgaum makeup; the Kolhapur card has none). Each applies to a single look.
+const LOOKS = ["Pre-Wedding", "Haldi", "Engagement", "Bridal"];
 
 export async function BridalBanner() {
   const branch = await getBranch();
+  const pricing = (await getPricing())[branch.id];
+  const looks = LOOKS.map((name) => ({ name, price: findPrice(pricing, priceKey("makeup", "Makeup", `${name} Makeup`)) }));
   return (
     <section aria-labelledby="bridal-h" className="container-lux py-12 md:py-16">
       <div className="grid overflow-hidden rounded-[2.5rem] bg-ink text-cream lg:grid-cols-2">
@@ -31,10 +30,10 @@ export async function BridalBanner() {
             {hasMakeup(branch) ? (
               <>
                 <ul className="mt-8 grid grid-cols-2 gap-3">
-                  {LOOKS.map((l) => (
+                  {looks.map((l) => (
                     <li key={l.name} className={`rounded-2xl border p-4 ${l.name === "Bridal" ? "border-gold/50 bg-gold/10" : "border-cream/10"}`}>
                       <p className="text-sm text-cream/60">{l.name}</p>
-                      <p className="mt-1 text-xl font-bold">{l.price}</p>
+                      {l.price && <p className="mt-1 text-xl font-bold">{formatPrice(l.price)}</p>}
                     </li>
                   ))}
                 </ul>

@@ -2,22 +2,35 @@ import { Reveal } from "../motion";
 import { Button } from "../ui";
 import { SectionHeading } from "../SectionHeading";
 import { getBranch } from "@/lib/branch-server";
-import type { Prices } from "@/lib/branches";
+import { getPricing } from "@/lib/price-store";
+import type { BranchId } from "@/lib/branches";
+import { findPrice, priceKey, startingPrice } from "@/lib/pricing";
 
-/** A few anchor prices per branch, all from lib/pricing.ts (the printed price lists). */
-const HIGHLIGHTS: { name: string; price: Prices }[] = [
-  { name: "Men's Hair Cut", price: { belgaum: "₹150", kolhapur: "₹250" } },
-  { name: "Ladies Hair Cut", price: { belgaum: "₹600", kolhapur: "₹600" } },
-  { name: "Hair Spa", price: { belgaum: "from ₹500", kolhapur: "from ₹800" } },
-  { name: "Global Color", price: { belgaum: "from ₹2500", kolhapur: "from ₹3000" } },
-  { name: "Premium Facial", price: { belgaum: "₹2000", kolhapur: "₹2200" } },
-  { name: "Premium Manicure", price: { belgaum: "₹500", kolhapur: "₹700" } },
-  { name: "Eyebrows (threading)", price: { belgaum: "₹50", kolhapur: "₹50" } },
-  { name: "Bridal Makeup", price: { belgaum: "₹8000" } },
+/**
+ * A few anchor prices, each a line in the live price list. `key` is per branch
+ * where the cards name a line differently; a branch without the line skips the row.
+ */
+const HIGHLIGHTS: { name: string; key: string | Record<BranchId, string>; from?: boolean }[] = [
+  {
+    name: "Men's Hair Cut",
+    key: { belgaum: priceKey("hair", "Hair Cut", "Men's Hair Cut"), kolhapur: priceKey("hair", "Hair Cut", "Adult Hair Cut") },
+  },
+  { name: "Ladies Hair Cut", key: priceKey("hair", "Hair Cut", "Ladies Hair Cut") },
+  { name: "Hair Spa", key: priceKey("hair", "Hair Spa", "Gents"), from: true },
+  { name: "Global Color", key: priceKey("hair", "Global Color · Virgin Hair", "Shoulder length"), from: true },
+  { name: "Premium Facial", key: priceKey("skin", "Skin · Facials", "Premium Facial") },
+  { name: "Premium Manicure", key: priceKey("nails", "Manicure & Pedicure", "Premium Manicure") },
+  { name: "Eyebrows (threading)", key: priceKey("grooming", "Threading", "Eyebrows") },
+  { name: "Bridal Makeup", key: priceKey("makeup", "Makeup", "Bridal Makeup") },
 ];
 
 export async function PricePreview() {
   const branch = await getBranch();
+  const pricing = (await getPricing())[branch.id];
+  const rows = HIGHLIGHTS.flatMap((h) => {
+    const price = findPrice(pricing, typeof h.key === "string" ? h.key : h.key[branch.id]);
+    return price ? [{ name: h.name, price: startingPrice(price, h.from) }] : [];
+  });
   return (
     <section aria-labelledby="pp-h" className="bg-sand/50 py-20 md:py-28">
       <div className="container-lux grid items-start gap-12 lg:grid-cols-12">
@@ -36,11 +49,11 @@ export async function PricePreview() {
 
         <Reveal className="rounded-[2rem] bg-cream p-6 shadow-[var(--shadow-soft)] sm:p-10 lg:col-span-7">
           <ul>
-            {HIGHLIGHTS.filter((h) => h.price[branch.id]).map((h) => (
+            {rows.map((h) => (
               <li key={h.name} className="flex items-baseline gap-3 border-b border-line py-4 last:border-0">
                 <span className="font-medium">{h.name}</span>
                 <span className="mb-1 flex-1 self-end border-b border-dotted border-ink/20" aria-hidden />
-                <span className="shrink-0 font-bold tabular-nums">{h.price[branch.id]}</span>
+                <span className="shrink-0 font-bold tabular-nums">{h.price}</span>
               </li>
             ))}
           </ul>

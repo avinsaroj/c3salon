@@ -101,7 +101,7 @@ export function Pricing({ pricing }: { pricing: Record<BranchId, PriceTab[]> }) 
     <section id="prices" aria-label="Price list" className="container-lux py-16 md:py-24">
       <div className="mb-8 flex flex-col items-center gap-3 text-center">
         <p className="text-sm text-muted">Showing prices for our {branch.name} branch</p>
-        <BranchSelect />
+        <BranchSelect align="center" />
       </div>
       <TabBar
         tabs={tabs.map((t) => ({ id: t.id, label: t.label }))}

@@ -67,7 +67,7 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <BranchSelect />
+            <BranchSelect align="right" />
             {/* Between lg and xl the desktop nav leaves no room for this button. */}
             <Link
               href={bookHref()}

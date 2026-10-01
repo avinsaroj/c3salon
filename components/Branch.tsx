@@ -46,26 +46,131 @@ export function useBranch() {
   return useContext(BranchContext);
 }
 
-/** Pill-shaped branch picker; a native select keeps it accessible on every device. */
-export function BranchSelect({ className = "" }: { className?: string }) {
+const MENU_ALIGN = {
+  left: "left-0 origin-top-left",
+  right: "right-0 origin-top-right",
+  center: "left-1/2 -translate-x-1/2 origin-top",
+};
+
+/**
+ * Pill-shaped branch picker that opens a listbox of branches with their city.
+ * Follows the ARIA listbox pattern: arrows, Home/End, Enter/Space and Escape.
+ */
+export function BranchSelect({ className = "", align = "left" }: { className?: string; align?: keyof typeof MENU_ALIGN }) {
   const { branch, select } = useBranch();
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const root = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const list = useRef<HTMLUListElement>(null);
+
+  const show = () => {
+    setActive(Math.max(0, BRANCHES.findIndex((b) => b.id === branch.id)));
+    setOpen(true);
+  };
+  const close = (refocus = true) => {
+    setOpen(false);
+    if (refocus) trigger.current?.focus();
+  };
+  const choose = (id: BranchId) => {
+    select(id);
+    close();
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    list.current?.focus();
+    const onDown = (e: PointerEvent) => !root.current?.contains(e.target as Node) && close(false);
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [open]);
+
+  const onListKey = (e: React.KeyboardEvent) => {
+    const last = BRANCHES.length - 1;
+    const moves: Record<string, () => void> = {
+      ArrowDown: () => setActive((i) => Math.min(i + 1, last)),
+      ArrowUp: () => setActive((i) => Math.max(i - 1, 0)),
+      Home: () => setActive(0),
+      End: () => setActive(last),
+      Enter: () => choose(BRANCHES[active].id),
+      " ": () => choose(BRANCHES[active].id),
+      Escape: () => close(),
+      Tab: () => close(false),
+    };
+    const move = moves[e.key];
+    if (!move) return;
+    if (e.key !== "Tab") e.preventDefault();
+    move();
+  };
+
   return (
-    <label className={`relative inline-flex min-h-11 items-center rounded-full border border-line bg-white/70 text-sm font-semibold text-ink backdrop-blur ${className}`}>
-      <span className="sr-only">Choose branch</span>
-      <MapPin className="pointer-events-none absolute left-3.5 hidden size-4 text-bronze sm:block" aria-hidden />
-      <select
-        value={branch.id}
-        onChange={(e) => select(e.target.value as BranchId)}
-        className="min-h-11 w-full cursor-pointer appearance-none rounded-full bg-transparent pl-4 pr-9 sm:pl-9"
+    <div ref={root} className={`relative inline-block ${className}`}>
+      <button
+        ref={trigger}
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={`Branch: ${branch.name}. Change branch`}
+        onClick={() => (open ? close() : show())}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            e.preventDefault();
+            show();
+          }
+        }}
+        className={`inline-flex min-h-11 items-center gap-2 rounded-full border bg-white/70 pl-4 pr-3.5 text-sm font-semibold text-ink backdrop-blur transition-colors sm:pl-3.5 ${
+          open ? "border-ink" : "border-line hover:border-ink"
+        }`}
       >
-        {BRANCHES.map((b) => (
-          <option key={b.id} value={b.id}>
-            {b.name}
-          </option>
-        ))}
-      </select>
-      <ChevronDown className="pointer-events-none absolute right-3.5 size-4" aria-hidden />
-    </label>
+        <MapPin className="hidden size-4 text-bronze sm:block" aria-hidden />
+        {branch.name}
+        <ChevronDown className={`size-4 transition-transform duration-300 ${open ? "rotate-180" : ""}`} aria-hidden />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <m.ul
+            ref={list}
+            role="listbox"
+            tabIndex={-1}
+            aria-label="Choose branch"
+            aria-activedescendant={`branch-opt-${BRANCHES[active].id}`}
+            onKeyDown={onListKey}
+            className={`absolute top-full z-50 mt-2 w-64 rounded-2xl border border-line bg-cream p-1.5 shadow-xl outline-none ${MENU_ALIGN[align]}`}
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.97 }}
+            transition={{ duration: 0.2, ease: EASE }}
+          >
+            {BRANCHES.map((b, i) => {
+              const selected = b.id === branch.id;
+              return (
+                <li
+                  key={b.id}
+                  id={`branch-opt-${b.id}`}
+                  role="option"
+                  aria-selected={selected}
+                  onClick={() => choose(b.id)}
+                  onPointerEnter={() => setActive(i)}
+                  className={`flex min-h-14 cursor-pointer items-center gap-3 rounded-xl px-3.5 py-2.5 text-left transition-colors ${
+                    selected ? "bg-ink text-cream" : i === active ? "bg-sand" : ""
+                  }`}
+                >
+                  <MapPin className="size-4 shrink-0 text-bronze" aria-hidden />
+                  <span className="flex-1">
+                    <span className="block text-sm font-semibold">{b.name}</span>
+                    <span className={`block text-xs ${selected ? "text-cream/70" : "text-muted"}`}>
+                      {b.city}, {b.region}
+                    </span>
+                  </span>
+                  {selected && <Check className="size-4 shrink-0" aria-hidden />}
+                </li>
+              );
+            })}
+          </m.ul>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 

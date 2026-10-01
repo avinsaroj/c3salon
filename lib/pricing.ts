@@ -49,6 +49,20 @@ export function priceLines(tabs: PriceTab[]) {
   );
 }
 
+/** One line's price, or undefined when this rate card doesn't list it. */
+export function findPrice(tabs: PriceTab[], key: string) {
+  return priceLines(tabs).find((l) => l.key === key)?.price;
+}
+
+/** The cheapest price in a tab, for "From ₹…" labels; undefined if the branch lacks the tab. */
+export function lowestPrice(tabs: PriceTab[], tabId: string) {
+  const lines = priceLines(tabs.filter((t) => t.id === tabId));
+  return lines.length ? Math.min(...lines.map((l) => l.price.min)) : undefined;
+}
+
+/** "₹600", or "from ₹500" for starting prices and ranges. */
+export const startingPrice = (p: Price, from = false) => (from || p.max ? `from ₹${p.min}` : `₹${p.min}`);
+
 export function applyOverrides(tabs: PriceTab[], o: PriceOverrides): PriceTab[] {
   return tabs.map((t) => ({
     ...t,

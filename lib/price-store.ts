@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { cache } from "react";
 import { BRANCHES, type BranchId } from "./branches";
 import { applyOverrides, type PriceOverrides, type PriceTab } from "./pricing";
 
@@ -21,14 +22,14 @@ async function read(): Promise<Store> {
   }
 }
 
-/** Each branch's live price list: its rate card with saved edits applied. */
-export async function getPricing(): Promise<Record<BranchId, PriceTab[]>> {
+/** Each branch's live price list: its rate card with saved edits applied. Read once per request. */
+export const getPricing = cache(async (): Promise<Record<BranchId, PriceTab[]>> => {
   const store = await read();
   return Object.fromEntries(BRANCHES.map((b) => [b.id, applyOverrides(b.pricing, store[b.id] ?? {})])) as Record<
     BranchId,
     PriceTab[]
   >;
-}
+});
 
 export async function saveOverrides(id: BranchId, overrides: PriceOverrides) {
   const store = await read();

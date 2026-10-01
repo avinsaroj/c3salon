@@ -3,12 +3,17 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { CATEGORIES } from "@/lib/services";
 import { getBranch } from "@/lib/branch-server";
+import { getPricing } from "@/lib/price-store";
+import { lowestPrice } from "@/lib/pricing";
 import { Reveal } from "../motion";
 import { ArrowLink } from "../ui";
 import { SectionHeading } from "../SectionHeading";
 
 export async function CategoryCards() {
   const branch = await getBranch();
+  const pricing = (await getPricing())[branch.id];
+  // Cheapest line in each category's price list tab.
+  const from = CATEGORIES.map((c) => lowestPrice(pricing, c.pricingTab));
   return (
     <section id="services" aria-labelledby="services-h" className="container-lux py-20 md:py-28">
       <SectionHeading
@@ -36,7 +41,7 @@ export async function CategoryCards() {
                 <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-transparent" />
               </div>
               <span className="absolute left-3 top-3 rounded-full bg-cream/90 px-2.5 py-1 text-[0.7rem] font-semibold backdrop-blur sm:left-4 sm:top-4 sm:px-3 sm:py-1.5 sm:text-xs">
-                {c.from[branch.id] ? `From ${c.from[branch.id]}` : "Price on request"}
+                {from[i] !== undefined ? `From ₹${from[i]}` : "Price on request"}
               </span>
               <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 text-cream sm:p-6">
                 <div>
